@@ -53,19 +53,23 @@ class Page:
         print '''<html>
                  <head>
                      <title>Likee - save videos!</title>
+                     <link rel="stylesheet" type="text/css" href="css/common.css"/>
                  </head>'''
 
     def present_body(self):
-        print "<body>"
+        print '''<body>'''
         self.create_main_form()
         self.create_navigations_refs()
+
         print "</body>"
         print "</html>"
 
     def create_main_form(self):
         print '''<form action="/cgi-enabled/promote.py" method="POST">'''
 
+        print '''<div class="grid-container">'''
         self.create_videos()
+        print '''</div>'''
 
         print '''   <input style="background-color:powderblue; height:100px; width:300px;margin-left:0px;margin-top:0px;" type="submit" value="Submit">'''
         print '''   <input type="hidden" name="offset" value="%s">''' % str(self.offset + cfg.videos_on_page)
@@ -73,18 +77,19 @@ class Page:
         print ''' </form> ''' 
 
     def create_videos(self):
-        for i in range(1, cfg.videos_on_page):
+        for i in range(1, cfg.videos_on_page+1):
             self.create_video_field(i, self.offset + i)
 
     def create_video_field(self, idx, vid_num):
         url = self.get_url_by_number(vid_num)
         background_color = self.is_video_checked(url) and '#4aff68' or '#c8c8fd'
-        print(url)
-        print '''<div style="background-color:%s;position:relative;max-width:255px;border:2px solid;">''' % (background_color)
-        print '''   <video width="200" height="350" controls="">'''
+        print '''<div class="grid-item">'''
+        print '''   <div style="background-color:%s;border:2px solid;border-color:#00887b">''' % (background_color)
+        print '''     <video width="220" height="360" controls="">'''
         print '''       <source src="%s" type="video/mp4"> ''' % url
-        print '''   </video>    '''
-        print '''   <input style="height:50px;width:50px;margin-left:200px;margin-top:-200px;" type="checkbox" name="vid_num_%s" value="%s"> ''' % (str(idx), url)
+        print '''     </video>    '''
+        print '''   </div>'''
+        print '''     <input style="height:50px;width:50px;margin:-20px;position:relative;left:150;top:-180" type="checkbox" name="vid_num_%s" value="%s"> ''' % (str(idx), url)
         print '''</div>'''
     
     def get_url_by_number(self, n):
