@@ -18,3 +18,58 @@ body {
          font-size: 30px;
          text-align: center;
 }
+
+.enjoy-css {
+     -webkit-box-sizing: content-box;
+     -moz-box-sizing: content-box;
+     box-sizing: content-box;
+     width: 300px;
+     height: 80px;
+     cursor: pointer;
+     margin: 0 auto;
+     border-top: 2px solid rgba(0,157,255,1);
+     border-right: 4px solid rgba(0,157,255,1);
+     border-bottom: 2px solid rgba(0,157,255,1);
+     border-left: 4px solid rgba(0,157,255,1);
+     -webkit-border-radius: 30px;
+     border-radius: 30px;
+     font: normal 53px/91px "syncopate", Helvetica, sans-serif;
+     color: rgba(0,157,255,1);
+     text-align: center;
+     -o-text-overflow: clip;
+     text-overflow: clip;
+     word-spacing: 2px;
+     -webkit-transition: background-color 0.3s cubic-bezier(0, 0, 0, 0), color 0.3s cubic-bezier(0, 0, 0, 0), width 0.3s cubic-bezier(0, 0, 0, 0), border-width 0.3s cubic-bezier(0, 0, 0, 0), border-color 0.3s cubic-bezier(0, 0, 0, 0);
+     -moz-transition: background-color 0.3s cubic-bezier(0, 0, 0, 0), color 0.3s cubic-bezier(0, 0, 0, 0), width 0.3s cubic-bezier(0, 0, 0, 0), border-width 0.3s cubic-bezier(0, 0, 0, 0), border-color 0.3s cubic-bezier(0, 0, 0, 0);
+     -o-transition: background-color 0.3s cubic-bezier(0, 0, 0, 0), color 0.3s cubic-bezier(0, 0, 0, 0), width 0.3s cubic-bezier(0, 0, 0, 0), border-width 0.3s cubic-bezier(0, 0, 0, 0), border-color 0.3s cubic-bezier(0, 0, 0, 0);
+transition: background-color 0.3s cubic-bezier(0, 0, 0, 0), color 0.3s cubic-bezier(0, 0, 0, 0), width 0.3s cubic-bezier(0, 0, 0, 0), border-width 0.3s cubic-bezier(0, 0, 0, 0), border-color 0.3s cubic-bezier(0, 0, 0, 0);
+}
+
+.enjoy-css:hover {
+     -webkit-border-radius: 32px;
+     border-radius: 32px;
+     color: rgba(0,140,255,1);
+     background: -webkit-linear-gradient(-90deg, rgba(208,244,242,1) 0, rgba(10,209,169,0.25) 43%, rgba(73,204,95,0.49) 74%, rgba(60,227,242,1) 100%);
+     background: -moz-linear-gradient(180deg, rgba(208,244,242,1) 0, rgba(10,209,169,0.25) 43%, rgba(73,204,95,0.49) 74%, rgba(60,227,242,1) 100%);
+     background: linear-gradient(180deg, rgba(208,244,242,1) 0, rgba(10,209,169,0.25) 43%, rgba(73,204,95,0.49) 74%, rgba(60,227,242,1) 100%);
+     background-position: 50% 50%;
+     -webkit-background-origin: padding-box;
+     background-origin: padding-box;
+     -webkit-background-clip: border-box;
+     background-clip: border-box;
+     -webkit-background-size: auto auto;
+     background-size: auto auto;
+}
+
+.enjoy-css:active {
+     background: -webkit-linear-gradient(-90deg, rgba(208,244,242,1) 0, rgba(10,209,169,0.47) 28%, rgba(73,184,204,0.56) 57%, rgba(60,227,242,1) 100%);
+     background: -moz-linear-gradient(180deg, rgba(208,244,242,1) 0, rgba(10,209,169,0.47) 28%, rgba(73,184,204,0.56) 57%, rgba(60,227,242,1) 100%);
+     background: linear-gradient(180deg, rgba(208,244,242,1) 0, rgba(10,209,169,0.47) 28%, rgba(73,184,204,0.56) 57%, rgba(60,227,242,1) 100%);
+     background-position: 50% 50%;
+     -webkit-background-origin: padding-box;
+     background-origin: padding-box;
+     -webkit-background-clip: border-box;
+     background-clip: border-box;
+     -webkit-background-size: auto auto;
+     background-size: auto auto;
+}

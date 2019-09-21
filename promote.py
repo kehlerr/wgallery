@@ -71,7 +71,8 @@ class Page:
         self.create_videos()
         print '''</div>'''
 
-        print '''   <input style="background-color:powderblue; height:100px; width:300px;margin-left:0px;margin-top:0px;" type="submit" value="Submit">'''
+        print '''   <input class="enjoy-css" type="submit" value="Submit">
+                    <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>'''
         print '''   <input type="hidden" name="offset" value="%s">''' % str(self.offset + cfg.videos_on_page)
         print '''   <input type="hidden" name="uid" value="%s">''' % self.uid
         print ''' </form> ''' 
