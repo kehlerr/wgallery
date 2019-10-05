@@ -1,21 +1,18 @@
 #!/usr/bin/env python
 
-import os, re
+import os
+from glob import glob
 import cgi, cgitb
 import config as cfg
 
-template_url_file = re.compile('[0-9]+'+cfg.list_file_ext)
-
-def is_file_with_urls(filename):
-    return template_url_file.match(filename)
 
 def get_uids():
-    workdir_content = os.listdir(cfg.wip_path)
     ready_uids = []
-    for fname in workdir_content:
-        if is_file_with_urls(fname):
-            uid = fname.split(cfg.list_file_ext)[0]
-            ready_uids.append(uid) 
+    dirs = glob(os.path.join(cfg.wip_path,'*',''))
+    for d in dirs:
+         uid = cfg.get_uid_from_dir(d)
+         if uid:
+              ready_uids.append(uid)
     return ready_uids
 
 def present():

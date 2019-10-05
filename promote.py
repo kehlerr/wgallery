@@ -129,7 +129,7 @@ class Page:
                     else:
                          self.checked_list.remove(url)
                self.write_checked()
-               self.checked_data = None
+               #self.checked_data = None
           
      def write_checked(self):
           path_saved_file = cfg.get_path_saved_urls_file(self.uid)
@@ -154,7 +154,7 @@ def get_form_data():
      data['checkd'] = []
 
      for i in range(1, cfg.videos_on_page):
-          val = form.getvalue('vid_num_'+str(i))
+          val = form.getvalue('vid_num_'+str(i-1))
           if val:
                data['checkd'].append(val)
      return data
