@@ -5,14 +5,18 @@ from glob import glob
 
 videos_on_page = 30
 wip_path = '/var/www/html/cgi-enabled/datadump_path/.promodump/likee_wip/' 
+url_path = 'http://localhost/cgi-enabled/datadump_path/.promodump/likee_wip/'
 list_file_ext = '.url'
-saved_urls_file_suffix = '_promo'
-saved_urls_file_ext = '.txt'
+json_file_ext = '.json'
 max_refs_count = 30
 
 
 def is_file_with_urls(filename):
      template_url_file = re.compile('[0-9]+'+list_file_ext)
+     return template_url_file.match(filename)
+
+def is_file_with_json_data(filename):
+     template_url_file = re.compile('[a-z0-9]+'+json_file_ext)
      return template_url_file.match(filename)
 
 def get_uid_from_dir(directory_path):
@@ -21,6 +25,10 @@ def get_uid_from_dir(directory_path):
           if is_file_with_urls(fname):
                uid = fname.split(list_file_ext)[0]
                break
+          elif is_file_with_json_data(fname):
+               uid = fname.split(json_file_ext)[0]
+               break
+
      return uid
 
 def is_uid_dir(uid, d):
@@ -38,12 +46,22 @@ def get_profile_dir(int_id):
                if is_uid_dir(uid, dirname):
                     return dirname
 
-def get_path_url_file(uid):
-     listfile_name = str(uid)+list_file_ext
+def get_path_json_urls_file(uid):
+     listfile_name = str(uid)+json_file_ext
      dirname = get_profile_dir(uid) or ''
      return dirname + listfile_name
- 
+
+
+saved_urls_file_suffix = '_promo'
+todel_urls_file_suffix = '_todel'
+processed_urls_file_ext = '.txt'
+
 def get_path_saved_urls_file(uid):
-     savedfile_name = str(uid) + saved_urls_file_suffix + saved_urls_file_ext
+     savedfile_name = str(uid) + saved_urls_file_suffix + processed_urls_file_ext
      dirname = get_profile_dir(uid) or ''
      return dirname + savedfile_name
+
+def get_path_todelete_urls_file(uid):
+     todeletefile_name = str(uid) + todel_urls_file_suffix + processed_urls_file_ext
+     dirname = get_profile_dir(uid) or ''
+     return dirname + todeletefile_name
