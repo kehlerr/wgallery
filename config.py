@@ -3,13 +3,14 @@
 import re, os
 from glob import glob
 
-videos_on_page = 30
 wip_path = '/var/www/html/cgi-enabled/datadump_path/.promodump/likee_wip/' 
 url_path = 'http://192.168.1.15/cgi-enabled/datadump_path/.promodump/likee_wip/'
 list_file_ext = '.url'
 json_file_ext = '.json'
 max_refs_count = 30
 
+videos_on_page = 30
+video_exts = [ '.mp4' ]
 
 def is_file_with_urls(filename):
      template_url_file = re.compile('[a-zA-Z0-9_]+'+list_file_ext)
@@ -61,3 +62,6 @@ def get_path_todelete_urls_file(uid):
      todeletefile_name = str(uid) + todel_urls_file_suffix + processed_urls_file_ext
      dirname = get_profile_dir(uid) or ''
      return dirname + todeletefile_name
+
+def is_video(fname):
+     return os.path.splitext(fname)[1] in video_exts
