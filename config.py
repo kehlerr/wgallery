@@ -5,30 +5,26 @@ from glob import glob
 
 videos_on_page = 30
 wip_path = '/var/www/html/cgi-enabled/datadump_path/.promodump/likee_wip/' 
-url_path = 'http://localhost/cgi-enabled/datadump_path/.promodump/likee_wip/'
+url_path = 'http://192.168.1.15/cgi-enabled/datadump_path/.promodump/likee_wip/'
 list_file_ext = '.url'
 json_file_ext = '.json'
 max_refs_count = 30
 
 
 def is_file_with_urls(filename):
-     template_url_file = re.compile('[0-9]+'+list_file_ext)
+     template_url_file = re.compile('[a-zA-Z0-9_]+'+list_file_ext)
      return template_url_file.match(filename)
 
 def is_file_with_json_data(filename):
-     template_url_file = re.compile('[a-z0-9]+'+json_file_ext)
+     template_url_file = re.compile('[a-zA-Z0-9_]+'+json_file_ext)
      return template_url_file.match(filename)
 
 def get_uid_from_dir(directory_path):
      uid = None
      for fname in os.listdir(directory_path):
-          if is_file_with_urls(fname):
-               uid = fname.split(list_file_ext)[0]
+          if is_file_with_json_data(fname) or is_file_with_urls(fname):
+               uid = os.path.splitext(fname)[0]
                break
-          elif is_file_with_json_data(fname):
-               uid = fname.split(json_file_ext)[0]
-               break
-
      return uid
 
 def is_uid_dir(uid, d):
