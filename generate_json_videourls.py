@@ -22,7 +22,7 @@ json_data = []
 for fname in files_list:
      if cfg.is_video(fname):
           video_url = cfg.url_path + dir_name + '/' + fname
-          data = [{ "videoUrl": video_url }]
+          data = [{ "videoUrl": video_url, "local_filename":fname }]
           post = { "data" : data }
           json_data.append(post)
 

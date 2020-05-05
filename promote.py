@@ -96,35 +96,49 @@ class Page:
           post_data = self.get_data_by_number(vid_num)
           if not post_data:
                return
-          url=post_data['videoUrl'].split('?')[0]
+          url=''
+          vid_post = ''
+          if 'local_filename' in post_data:
+               fname = post_data['local_filename']
+               url = os.path.join(cfg.url_path, self.uid, fname)
+               vid_post = fname
+          else:
+               url = post_data['videoUrl'].split('?')[0]
+               vid_post = url
           poster_uid='posterUid' in post_data and post_data['posterUid'] or 0
           like_count='likeCount' in post_data and post_data['likeCount'] or 0
           comment_count='commentCount' in post_data and post_data['commentCount'] or 0
           background_color = '#c8c8fd'
-          if self.is_video_checked(url):
+          if self.is_video_checked(vid_post):
                background_color = '#4aff68'
-          elif self.is_video_todelete(url):
+          elif self.is_video_todelete(vid_post):
                background_color = '#ff7d7d'
 
           print '''<div class="grid-item">'''
           if poster_uid != 0:
                print '''<div style="font-size:0.6">%s</div>''' % (poster_uid)
           print '''   <div style="background-color:%s;border:2px solid;border-color:#00887b">''' % (background_color)
-          print '''     <input style="height:35px;width:35px;margin:-10px;position:relative;left:0;top:-100" type="checkbox" name="del_vid_num_%s" value="%s"> ''' % (str(idx), url)
+          print ''' <label class="container" style="margin-left:2%"> '''
+          print '''     <input style="height:35px;width:35px;margin:-10px;position:relative;left:0;top:-100" type="checkbox" name="del_vid_num_%s" value="%s"> ''' % (str(idx), vid_post)
+          print ''' <span class="checkmark_todel"></span> '''
+          print ''' </label> '''
           print '''     <video width="220" height="360" controls="">'''
           print '''       <source src="%s" type="video/mp4"> ''' % url
           print '''     </video>    '''
           if poster_uid != 0:
                print ''' <div style="width:64px;font-size:0.6;float:right;margin-left:-80px;margin-right:12px;margin-top:40px;"> 
-                         <img src="http://localhost/cgi-enabled/img/icon_like.png">
+                         <img src="img/icon_like.png">
                          %s
                      </div>''' % like_count
                print ''' <div style="width:64px;font-size:0.6;float:right;margin-left:-40px;margin-right:12px;margin-top:120px;"> 
-                         <img src="http://localhost/cgi-enabled/img/icon_comment.png">
+                         <img src="img/icon_comment.png">
                          %s
                     </div>''' % comment_count
           print '''   </div>'''
-          print '''     <input style="height:50px;width:50px;margin:-20px;position:relative;left:150;top:-100" type="checkbox" name="vid_num_%s" value="%s"> ''' % (str(idx), url)
+          print ''' <label class="container" style="margin-left:24%;margin-top:-10%"> '''
+          print '''     <input type="checkbox" name="vid_num_%s" value="%s"> ''' % (str(idx), vid_post)
+          print ''' <span class="checkmark_promote"></span> '''
+          print ''' </label> '''
           print '''</div>'''
 
      def get_data_by_number(self, n):
@@ -208,12 +222,12 @@ def get_form_data():
      data['checkd'] = []
      data['delete'] = []
 
-     for i in range(1, cfg.videos_on_page):
-          val = form.getvalue('vid_num_'+str(i-1))
+     for i in range(cfg.videos_on_page):
+          val = form.getvalue('vid_num_'+str(i))
           if val:
                data['checkd'].append(val)
           else: 
-               val = form.getvalue('del_vid_num_'+str(i-1))
+               val = form.getvalue('del_vid_num_'+str(i))
                if val:
                     data['delete'].append(val)
 

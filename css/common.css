@@ -73,3 +73,113 @@ transition: background-color 0.3s cubic-bezier(0, 0, 0, 0), color 0.3s cubic-bez
      -webkit-background-size: auto auto;
      background-size: auto auto;
 }
+
+.container {
+  display: block;
+  position: absolute;
+  margin-top: 16%;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark_todel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #ffafaf;
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark_todel {
+  background-color: #ff6b6b;
+}
+
+/* When the checkbox is checked, add a blue background */
+.container input:checked ~ .checkmark_todel {
+  background-color: #ff1d1d;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark_todel:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark_todel:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.container .checkmark_todel:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.checkmark_promote {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 40px;
+  width: 40px;
+  background-color: #afffff;
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark_promote {
+  background-color: #67ff96;
+}
+
+/* When the checkbox is checked, add a blue background */
+.container input:checked ~ .checkmark_promote {
+  background-color: #00ff22;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark_promote:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark_promote:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.container .checkmark_promote:after {
+  left: 14px;
+  top: 5px;
+  width: 10px;
+  height: 20px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
