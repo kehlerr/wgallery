@@ -12,11 +12,11 @@ body {
 }
 
 .grid-item {
-         background-color: rgba(213, 255, 255, 0.7);
-         border: 1px solid rgba(0, 0, 0, 0.8);
-         padding: 20px;
-         font-size: 30px;
-         text-align: center;
+  background-color: rgba(213, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  font-size: 30px;
+  text-align: center;
 }
 
 .enjoy-css {
@@ -76,8 +76,7 @@ transition: background-color 0.3s cubic-bezier(0, 0, 0, 0), color 0.3s cubic-bez
 
 .container {
   display: block;
-  position: absolute;
-  margin-top: 16%;
+  margin-left: 32%;
   cursor: pointer;
   font-size: 22px;
   -webkit-user-select: none;
@@ -98,8 +97,6 @@ transition: background-color 0.3s cubic-bezier(0, 0, 0, 0), color 0.3s cubic-bez
 /* Create a custom checkbox */
 .checkmark_todel {
   position: absolute;
-  top: 0;
-  left: 0;
   height: 25px;
   width: 25px;
   background-color: #ffafaf;
@@ -142,8 +139,6 @@ transition: background-color 0.3s cubic-bezier(0, 0, 0, 0), color 0.3s cubic-bez
 
 .checkmark_promote {
   position: absolute;
-  top: 0;
-  left: 0;
   height: 40px;
   width: 40px;
   background-color: #afffff;

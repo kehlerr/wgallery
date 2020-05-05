@@ -1,0 +1,55 @@
+.post-cell {
+    display: grid;
+    padding-top: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    background-color: #c8c8fd;
+    grid-template-rows: 180px 180px 40px;
+    grid-template-columns: auto 220px auto;
+    grid-template-areas:
+      "sdl main sdr_top"
+      "sdl main sdr"
+      "ft ft ft";
+}
+
+.post-cell_promoted {
+    display: grid;
+    padding-top: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    background-color: #4aff68;
+    grid-template-rows: 180px 180px 40px;
+    grid-template-columns: auto 220px auto;
+    grid-template-areas:
+        "sdl main sdr_top"
+        "sdl main sdr"
+        "ft ft ft";
+}
+
+.post-cell_deleted {
+    display: grid;
+    padding-top: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    background-color: #ff7d7d;
+    grid-template-rows: 180px 180px 40px;
+    grid-template-columns: auto 220px auto;
+    grid-template-areas:
+        "sdl main sdr_top"
+        "sdl main sdr"
+        "ft ft ft";
+}
+
+.footer {
+    grid-area: ft;
+}
+.content {
+    grid-area: main;
+}
+.sidebar_left {
+    grid-area: sdl;
+}
+.sidebar_right {
+    grid-area: sdr;
+}
+.sidebar_right_top {
+    grid-area: sdr_top;
+}
+

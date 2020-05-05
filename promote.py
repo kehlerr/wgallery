@@ -61,6 +61,7 @@ class Page:
                     <head>
                          <title>Likee - save videos!</title>
                          <link rel="stylesheet" type="text/css" href="css/common.css"/>
+                         <link rel="stylesheet" type="text/css" href="css/post_cell.css"/>
                     </head>'''
 
      def present_body(self):
@@ -108,37 +109,51 @@ class Page:
           poster_uid='posterUid' in post_data and post_data['posterUid'] or 0
           like_count='likeCount' in post_data and post_data['likeCount'] or 0
           comment_count='commentCount' in post_data and post_data['commentCount'] or 0
-          background_color = '#c8c8fd'
+          item_class = 'post-cell'
           if self.is_video_checked(vid_post):
-               background_color = '#4aff68'
+               item_class = 'post-cell_promoted'
           elif self.is_video_todelete(vid_post):
-               background_color = '#ff7d7d'
+               item_class = 'post-cell_deleted'
 
-          print '''<div class="grid-item">'''
+          print '''<div class="%s">''' % (item_class)
+          print ''' 
+          <div class="sidebar_left">
+               <label class="container" style="margin-top:200px">
+                    <input type="checkbox" name="del_vid_num_%s" value="%s">
+                    <span class="checkmark_todel"></span>
+               </label>
+          </div>''' % (str(idx), vid_post)
+          print '''
+          <div class="content">
+               <video width="220" height="360" controls="">
+                    <source src="%s" type="video/mp4">
+               </video>
+          </div>''' % url
+          print '''<div class="sidebar_right_top">'''
           if poster_uid != 0:
-               print '''<div style="font-size:0.6">%s</div>''' % (poster_uid)
-          print '''   <div style="background-color:%s;border:2px solid;border-color:#00887b">''' % (background_color)
-          print ''' <label class="container" style="margin-left:2%"> '''
-          print '''     <input style="height:35px;width:35px;margin:-10px;position:relative;left:0;top:-100" type="checkbox" name="del_vid_num_%s" value="%s"> ''' % (str(idx), vid_post)
-          print ''' <span class="checkmark_todel"></span> '''
-          print ''' </label> '''
-          print '''     <video width="220" height="360" controls="">'''
-          print '''       <source src="%s" type="video/mp4"> ''' % url
-          print '''     </video>    '''
+               print '''
+               <div>
+                 <img style="margin-left:auto;margin-right: auto;display:block" src="img/icon_like.png">
+                 <span style="display:block;text-align:center">%s</span>
+               </div>''' % like_count
+               print '''
+               <div> 
+                 <img style="margin-left:auto;margin-right: auto;display:block" src="img/icon_comment.png">
+                 <span style="display:block;text-align:center">%s</span>
+               </div>''' % comment_count
+          print ''' </div> '''
+          print '''<div class="sidebar_right">
+          <div style="margin-top:10px">
+            <label class="container">
+               <input type="checkbox" name="vid_num_%s" value="%s">
+               <span class="checkmark_promote"></span>
+            </label></div>
+          </div>''' % (str(idx), vid_post)
           if poster_uid != 0:
-               print ''' <div style="width:64px;font-size:0.6;float:right;margin-left:-80px;margin-right:12px;margin-top:40px;"> 
-                         <img src="img/icon_like.png">
-                         %s
-                     </div>''' % like_count
-               print ''' <div style="width:64px;font-size:0.6;float:right;margin-left:-40px;margin-right:12px;margin-top:120px;"> 
-                         <img src="img/icon_comment.png">
-                         %s
-                    </div>''' % comment_count
-          print '''   </div>'''
-          print ''' <label class="container" style="margin-left:24%;margin-top:-10%"> '''
-          print '''     <input type="checkbox" name="vid_num_%s" value="%s"> ''' % (str(idx), vid_post)
-          print ''' <span class="checkmark_promote"></span> '''
-          print ''' </label> '''
+               print '''
+                    <div class="footer">
+                         <span style="display:block;text-align:center;margin-top:10px">%s</span>
+                    </div>''' % (poster_uid)
           print '''</div>'''
 
      def get_data_by_number(self, n):
