@@ -26,7 +26,7 @@ class Page:
 
           self.json_list = []
           self.fill_json_list()
-          self.urls_amount = len(self.json_list)
+          self.posts_count = len(self.json_list)
 
 
      def fill_json_list(self):
@@ -39,13 +39,13 @@ class Page:
           path_saved_file = cfg.get_path_saved_urls_file(self.uid)
           if os.path.exists(path_saved_file):
                with open(path_saved_file, 'r') as f:
-                    self.checked_list = f.read().split('\n')
+                    self.checked_list = f.read().splitlines()
 
      def fill_todelete_list(self):
           path_todelete_file = cfg.get_path_todelete_urls_file(self.uid)
           if os.path.exists(path_todelete_file):
                with open(path_todelete_file, 'r') as f:
-                    self.todelete_list = f.read().split('\n')
+                    self.todelete_list = f.read().splitlines()
 
 
      def present(self):
@@ -65,7 +65,7 @@ class Page:
                     </head>'''
 
      def present_body(self):
-          print '''<body>'''
+          print '''<body style="font-family:'Roboto',Verdana,Geneva,sans-serif">'''
 
           self.create_main_form()
           self.create_navigations_refs()
@@ -75,20 +75,39 @@ class Page:
 
      def create_main_form(self):
           print '''<form action="/cgi-enabled/promote.py" method="POST">'''
-
+          self.create_info_count()
           print '''<div class="grid-container">'''
           self.create_videos()
           print '''</div>'''
-          print '''<div style="margin-left:515px;margin-top:15px;">         
-                       <input class="enjoy-css" type="submit" value="Submit">
-                         <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>'''
-          print '''</div>'''
-          print '''   <input type="hidden" name="offset" value="%s">''' % str(self.offset + cfg.videos_on_page)
+          print '''
+          <div style="margin-top:10px">
+               <span style="margin-left: 35%;margin-top: 0px;">
+                    <input class="enjoy-css" type="submit" name="back" value="<<">
+                    <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>
+               </span>
+               <span>
+                    <input class="enjoy-css" name="next" type="submit" value="Submit>">
+                    <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>
+               </span>
+          </div>'''
+          print '''   <input type="hidden" name="offset" value="%d">''' % self.offset
           print '''   <input type="hidden" name="uid" value="%s">''' % self.uid
-          print ''' </form> ''' 
+          print ''' </form> '''
+
+     def create_info_count(self):
+          print ''' <div style="background-color:#b5e270;font-size: larger;margin-bottom: 5px;margin-right: 7;border-radius: 7px;padding: 5px;padding-left: 10px;"> '''
+          print '''<b><span style="color:darkslategrey">Total posts: %d</span></b>''' % (self.posts_count)
+          checked_count = len(self.checked_list)
+          if checked_count > 0:
+               print '''<span style="color:green">/ checked: <b>%d</b></span>''' % (checked_count)
+
+          todelete_count = len(self.todelete_list)
+          if todelete_count > 0:
+               print '''<span style="color:red">/ todelete: <b>%d</b></span>''' % (todelete_count)
+          print ''' </div> '''
 
      def create_videos(self):
-          videos_on_page = min(cfg.videos_on_page, self.urls_amount - self.offset-1)
+          videos_on_page = min(cfg.videos_on_page, self.posts_count - self.offset-1)
           for i in range(videos_on_page):
                self.create_video_field(i)
 
@@ -157,7 +176,7 @@ class Page:
           print '''</div>'''
 
      def get_data_by_number(self, n):
-          number_in_list = n > 0 and n < self.urls_amount
+          number_in_list = n > 0 and n < self.posts_count
           return number_in_list and self.json_list[n-1]['data'][0] or None
 
      def create_navigations_refs(self):
@@ -165,7 +184,7 @@ class Page:
 
           current_page_idx = self.offset / cfg.videos_on_page + 1
           left_idx = max(0, current_page_idx - cfg.max_refs_count/2+1)
-          refs_count = min(self.urls_amount / cfg.videos_on_page + 1 - left_idx, cfg.max_refs_count)
+          refs_count = min(self.posts_count / cfg.videos_on_page + 1 - left_idx, cfg.max_refs_count)
           for i in range(refs_count):
                self.create_ref_button(left_idx+i)
 
@@ -202,8 +221,8 @@ class Page:
                for url in self.checked_list:
                     f.write(url + '\n')
 
-     def is_video_checked(self,url):
-          return url in self.checked_list    
+     def is_video_checked(self,v):
+          return v in self.checked_list
 
      def process_todelete(self):
           if len(self.todelete_data) > 0:
@@ -231,8 +250,15 @@ def get_form_data():
      form = cgi.FieldStorage() 
 
 # Get data from fields
+     offset_change = 0
+     if form.getvalue('back'):
+          offset_change = -1
+     elif form.getvalue('next'):
+          offset_change = 1
+
      value_offset = form.getvalue('offset')
-     data['offset'] = value_offset and int(value_offset) or 0
+     curr_offset = value_offset and int(value_offset) or 0
+     data['offset'] = curr_offset + cfg.videos_on_page*offset_change
      data['url_id'] = form.getvalue('uid') or 0
      data['checkd'] = []
      data['delete'] = []
