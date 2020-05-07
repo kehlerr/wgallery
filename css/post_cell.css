@@ -8,7 +8,7 @@
     grid-template-areas:
       "sdl main sdr_top"
       "sdl main sdr"
-      "ft ft ft";
+      ". ft .";
 }
 
 .post-cell_promoted {
@@ -21,7 +21,7 @@
     grid-template-areas:
         "sdl main sdr_top"
         "sdl main sdr"
-        "ft ft ft";
+        ". ft .";
 }
 
 .post-cell_deleted {
@@ -34,11 +34,13 @@
     grid-template-areas:
         "sdl main sdr_top"
         "sdl main sdr"
-        "ft ft ft";
+        ". ft .";
 }
 
 .footer {
     grid-area: ft;
+    display: flex;
+    justify-content: center;
 }
 .content {
     grid-area: main;

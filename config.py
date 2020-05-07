@@ -34,7 +34,6 @@ def is_uid_dir(uid, d):
 
 def get_profile_dir(int_id):
      uid = str(int_id)
-     folder_name = uid
      profiledir_path = os.path.join(wip_path, uid, '')
      if os.path.isdir(profiledir_path):
           return profiledir_path
@@ -49,17 +48,17 @@ def get_path_json_urls_file(uid):
      return dirname + listfile_name
 
 
-saved_urls_file_suffix = '_promo'
-todel_urls_file_suffix = '_todel'
-processed_urls_file_ext = '.txt'
+todel_file_suffix = '_todel'
+promo_file_suffix = '_promo'
+processed_json_file_ext = '.json'
 
-def get_path_saved_urls_file(uid):
-     savedfile_name = str(uid) + saved_urls_file_suffix + processed_urls_file_ext
+def get_path_promo_json_file(uid):
+     promo_fname = str(uid) + promo_file_suffix + processed_json_file_ext
      dirname = get_profile_dir(uid) or ''
-     return dirname + savedfile_name
+     return dirname + promo_fname
 
-def get_path_todelete_urls_file(uid):
-     todeletefile_name = str(uid) + todel_urls_file_suffix + processed_urls_file_ext
+def get_path_todelete_json_file(uid):
+     todeletefile_name = str(uid) + todel_file_suffix + processed_json_file_ext
      dirname = get_profile_dir(uid) or ''
      return dirname + todeletefile_name
 
