@@ -4,7 +4,7 @@ import re, os
 from glob import glob
 
 wip_path = '/var/www/html/cgi-enabled/datadump_path/.promodump/likee_wip/' 
-url_path = 'http://192.168.0.4/cgi-enabled/datadump_path/.promodump/likee_wip/'
+url_path = 'http://192.168.0.4/cgi-enabled/datadump_path/.promodump/likee_wip'
 list_file_ext = '.url'
 json_file_ext = '.json'
 max_refs_count = 30
@@ -42,25 +42,32 @@ def get_profile_dir(int_id):
                if is_uid_dir(uid, dirname):
                     return dirname
 
-def get_path_json_urls_file(uid):
+def get_json_pond_file(uid):
      listfile_name = str(uid)+json_file_ext
      dirname = get_profile_dir(uid) or ''
      return dirname + listfile_name
 
-
-todel_file_suffix = '_todel'
-promo_file_suffix = '_promo'
-processed_json_file_ext = '.json'
-
-def get_path_promo_json_file(uid):
-     promo_fname = str(uid) + promo_file_suffix + processed_json_file_ext
-     dirname = get_profile_dir(uid) or ''
-     return dirname + promo_fname
-
-def get_path_todelete_json_file(uid):
-     todeletefile_name = str(uid) + todel_file_suffix + processed_json_file_ext
-     dirname = get_profile_dir(uid) or ''
-     return dirname + todeletefile_name
-
 def is_video(fname):
      return os.path.splitext(fname)[1] in video_exts
+
+
+def ask_confirm(prompt=None, resp=False):
+     if prompt is None:
+          prompt = 'Are you sure?'
+
+     if resp:
+          prompt = '%s [%s]|%s: ' % (prompt, 'y', 'n')
+     else:
+          prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
+          
+     while True:
+          ans = raw_input(prompt)
+          if not ans:
+               return resp
+          if ans not in ['y', 'Y', 'n', 'N']:
+               print 'please enter y or n.'
+               continue
+          if ans == 'y' or ans == 'Y':
+               return True
+          if ans == 'n' or ans == 'N':
+               return False

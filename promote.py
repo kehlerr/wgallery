@@ -14,51 +14,60 @@ import index
 class Page:
      def __init__(self, form_data):
           self.uid = form_data['url_id']
+          self.src_list = form_data['src_list'] or 'overall'
+
+          self.json_pond = {}
+          self.json_pond_fname = cfg.get_json_pond_file(self.uid)
+          self.load_json_pond()
+
+          self.posts = self.json_pond['posts']
+          self.overall = self.json_pond['overall']
+          self.promo = self.json_pond['promo']
+          self.todel = self.json_pond['todel']
+
+          self.process_checked(form_data['promo'], 'promo')
+          self.process_checked(form_data['todel'], 'todel')
+          self.dump_pond()
+
+          self.posts_count = len(self[self.src_list])
           self.offset = form_data['offset']
-          self.src_list = form_data['src_list']
-          self.json_list = []
-          self.total_list = []
-          self.fill_total_list()
-          self.total_posts_count = len(self.total_list)
-          self.posts_count = len(self.json_list)
+          if self.offset > self.posts_count or self.offset < 0:
+               self.offset = form_data['prev_offset']
+          self.posts_on_page_count = min(cfg.videos_on_page, self.posts_count - self.offset)
 
-          self.checked_data = form_data['checkd']
-          self.checked_list = []
-          self.fill_checked_list()
-          self.process_checked()
+     def __getitem__(self, item):
+          return getattr(self, item)
 
-          self.todelete_data = form_data['delete']
-          self.todelete_list = []
-          self.fill_todelete_list()
-          self.process_todelete()
+     def load_json_pond(self):
+          if os.path.exists(self.json_pond_fname):
+               with open(self.json_pond_fname, 'r') as fp:
+                    self.json_pond = json.load(fp)
 
-          self.reassign_json_list()
+     def process_checked(self, data, l_type):
+          if len(data) > 0:
+               for n in data:
+                    post = self.get_post_by_number(int(n), self.src_list)
+                    lst = self[l_type]
+                    if not self.is_post_checked(post, l_type):
+                        lst.append(post['postId'])
+                    else:
+                        lst.remove(post['postId'])
 
-     def reassign_json_list(self):
-          if self.src_list == 'promo':
-               self.json_list = self.checked_list
-          elif self.src_list == 'todel':
-               self.json_list = self.todelete_list
-          self.posts_count = len(self.json_list)
+     def dump_pond(self):
+          with open(self.json_pond_fname, 'w+') as fp:
+               json.dump(self.json_pond, fp)
 
-     def fill_total_list(self):
-          filename = cfg.get_path_json_urls_file(self.uid)
-          if os.path.exists(filename):
-               with open(filename, 'r') as f:
-                    self.total_list = json.load(f)
-                    self.json_list = self.total_list
+     def is_post_checked(self, p, l_type):
+          lst = self[l_type]
+          return p['postId'] in lst
 
-     def fill_checked_list(self):
-          path_json_promo_file = cfg.get_path_promo_json_file(self.uid)
-          if os.path.exists(path_json_promo_file):
-               with open(path_json_promo_file, 'r') as fp:
-                    self.checked_list = json.load(fp)
-
-     def fill_todelete_list(self):
-          path_json_todel_file = cfg.get_path_todelete_json_file(self.uid)
-          if os.path.exists(path_json_todel_file):
-               with open(path_json_todel_file, 'r') as fp:
-                    self.todelete_list = json.load(fp)
+     def get_post_by_number(self, n, l_type):
+          lst = self[l_type]
+          number_in_list = n >= 0 and n <= len(lst)
+          if number_in_list:
+               postId = lst[n]
+               if postId:
+                    return self.posts[postId]
 
 
      def present(self):
@@ -87,7 +96,7 @@ class Page:
           print "</html>"
 
      def create_main_form(self):
-          print '''<form action="/cgi-enabled/promote.py" method="POST">'''
+          print '''<form id="main" action="/cgi-enabled/promote.py" method="POST">'''
           self.create_info_count()
           print '''<div class="grid-container">'''
           self.create_videos()
@@ -105,7 +114,8 @@ class Page:
           </div>'''
           print '''   <input type="hidden" name="offset" value="%d">''' % self.offset
           print '''   <input type="hidden" name="uid" value="%s">''' % self.uid
-          print '''   <input type="hidden" name="srcl" value="%s">''' % self.src_list
+          if self.src_list != 'overall':
+               print '''   <input type="hidden" name="srcl" value="%s">''' % self.src_list
           print ''' </form> '''
 
      def create_info_count(self):
@@ -113,14 +123,15 @@ class Page:
           print '''<b>
           <a style="text-decoration-color:darkslategrey"
                href=promote.py?uid=%s>''' % self.uid
-          print '''<span style="color:darkslategrey">Total posts: %d</span></a></b>''' % (self.total_posts_count)
-          checked_count = len(self.checked_list)
+          overall_count = len(self.overall)
+          print '''<span style="color:darkslategrey">Total posts: %d</span></a></b>''' % (overall_count)
+          checked_count = len(self.promo)
           if checked_count > 0:
                print '''<a style="text-decoration-color:green"
                href=promote.py?uid=%s&srcl=promo>''' % self.uid
                print ''' <span style="color:green">/ checked: <b>%d</b></span></a>''' % (checked_count)
 
-          todelete_count = len(self.todelete_list)
+          todelete_count = len(self.todel)
           if todelete_count > 0:
                print '''<a style="text-decoration-color:#e01632"
                href=promote.py?uid=%s&srcl=todel>''' % self.uid
@@ -128,13 +139,12 @@ class Page:
           print ''' </div> '''
 
      def create_videos(self):
-          videos_on_page = min(cfg.videos_on_page, self.posts_count - self.offset)
-          for i in range(videos_on_page):
+          for i in range(self.posts_on_page_count):
                self.create_video_field(i)
 
      def create_video_field(self, idx):
           vid_num = self.offset + idx
-          post_data = self.get_data_by_number(vid_num)
+          post_data = self.get_post_by_number(vid_num, self.src_list)
           if not post_data:
                return
           url=''
@@ -148,9 +158,9 @@ class Page:
           like_count='likeCount' in post_data and post_data['likeCount'] or 0
           comment_count='commentCount' in post_data and post_data['commentCount'] or 0
           item_class = 'post-cell'
-          if self.is_post_checked(post_data):
+          if self.is_post_checked(post_data, 'promo'):
                item_class = 'post-cell_promoted'
-          elif self.is_post_todelete(post_data):
+          elif self.is_post_checked(post_data, 'todel'):
                item_class = 'post-cell_deleted'
 
           print '''<div class="%s">''' % (item_class)
@@ -195,16 +205,6 @@ class Page:
           </div>''' % (poster_uid != 0 and poster_uid or fname)
           print '''</div>'''
 
-     def get_data_by_number(self, n):
-          number_in_list = n >= 0 and n <= self.posts_count
-          if number_in_list:
-               post = self.json_list[n]
-               if post:
-                    if 'data' in post:
-                         return post['data'][0]
-                    else:
-                         return post
-          return number_in_list and self.json_list[n]['data'][0] or None
 
      def create_navigations_refs(self):
           print ''' <table> <tbody> <tr valign="top"> '''
@@ -231,44 +231,6 @@ class Page:
                print "</td>"
 
 
-     def process_checked(self):
-          if len(self.checked_data) > 0:
-               for n in self.checked_data:
-                    post = self.get_data_by_number(int(n))
-                    if not self.is_post_checked(post):
-                        self.checked_list.append(post)
-                    else:
-                        self.checked_list.remove(post)
-               self.write_checked()
-               #self.checked_data = None
-
-     def write_checked(self):
-          path_json_promo_file = cfg.get_path_promo_json_file(self.uid)
-          with open(path_json_promo_file, 'w+') as fp:
-               json.dump(self.checked_list, fp)
-
-     def is_post_checked(self,v):
-          return v in self.checked_list
-
-     def process_todelete(self):
-          if len(self.todelete_data) > 0:
-               for n in self.todelete_data:
-                    post = self.get_data_by_number(int(n))
-                    if not self.is_post_todelete(post):
-                         self.todelete_list.append(post)
-                    else:
-                         self.todelete_list.remove(post)
-               self.write_todelete()
-          
-     def write_todelete(self):
-          path_json_todelete_file = cfg.get_path_todelete_json_file(self.uid)
-          with open(path_json_todelete_file, 'w+') as fp:
-               json.dump(self.todelete_list, fp)
-
-     def is_post_todelete(self,v):
-          return v in self.todelete_list
-
-
 def get_form_data():
      data={}
 
@@ -284,20 +246,22 @@ def get_form_data():
 
      data['src_list'] = form.getvalue('srcl')
      value_offset = form.getvalue('offset')
-     curr_offset = value_offset and int(value_offset) or 0
-     data['offset'] = curr_offset + cfg.videos_on_page*offset_change
+     prev_offset = value_offset and int(value_offset) or 0
+     curr_offset = prev_offset + cfg.videos_on_page*offset_change
+     data['prev_offset'] = prev_offset
+     data['offset'] = curr_offset
      data['url_id'] = form.getvalue('uid') or 0
-     data['checkd'] = []
-     data['delete'] = []
+     data['promo'] = []
+     data['todel'] = []
 
      for i in range(cfg.videos_on_page):
           val = form.getvalue('vid_num_'+str(i))
           if val:
-               data['checkd'].append(val)
+               data['promo'].append(val)
           else: 
                val = form.getvalue('del_vid_num_'+str(i))
                if val:
-                    data['delete'].append(val)
+                    data['todel'].append(val)
 
      return data
 
