@@ -42,6 +42,9 @@ def get_profile_dir(int_id):
                if is_uid_dir(uid, dirname):
                     return dirname
 
+def get_ponds_db():
+     return os.path.join(wip_path, 'ponds_db.json')
+
 def get_json_pond_file(uid):
      listfile_name = str(uid)+json_file_ext
      dirname = get_profile_dir(uid) or ''

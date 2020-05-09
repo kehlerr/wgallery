@@ -14,8 +14,8 @@ body {
 .grid-item {
   background-color: rgba(213, 255, 255, 0.7);
   border: 1px solid rgba(0, 0, 0, 0.8);
-  padding: 20px;
-  font-size: 30px;
+  padding: 12px;
+  font-size: 20px;
   text-align: center;
 }
 

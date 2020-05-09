@@ -96,7 +96,7 @@ class Page:
           print "</html>"
 
      def create_main_form(self):
-          print '''<form id="main" action="/cgi-enabled/promote.py" method="POST">'''
+          print '''<form id="main" action="promote.py" method="POST">'''
           self.create_info_count()
           print '''<div class="grid-container">'''
           self.create_videos()
