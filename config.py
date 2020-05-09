@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import re, os
+import re, os, json
 from glob import glob
 
 wip_path = '/var/www/html/cgi-enabled/datadump_path/.promodump/likee_wip/' 
@@ -42,9 +42,6 @@ def get_profile_dir(int_id):
                if is_uid_dir(uid, dirname):
                     return dirname
 
-def get_ponds_db():
-     return os.path.join(wip_path, 'ponds_db.json')
-
 def get_json_pond_file(uid):
      listfile_name = str(uid)+json_file_ext
      dirname = get_profile_dir(uid) or ''
@@ -52,7 +49,6 @@ def get_json_pond_file(uid):
 
 def is_video(fname):
      return os.path.splitext(fname)[1] in video_exts
-
 
 def ask_confirm(prompt=None, resp=False):
      if prompt is None:
@@ -74,3 +70,16 @@ def ask_confirm(prompt=None, resp=False):
                return True
           if ans == 'n' or ans == 'N':
                return False
+
+def get_ponds_db():
+     return os.path.join(wip_path, 'ponds_db.json')
+
+def update_ponds_db(pond_uid, info_data):
+     db_json_fname = get_ponds_db()
+     with open(db_json_fname, 'r') as fp:
+          db_json = json.load(fp)
+
+     db_json['ponds'][pond_uid] = info_data
+
+     with open(db_json_fname, 'w+') as fp:
+          json.dump(db_json, fp, separators=(',',':'))

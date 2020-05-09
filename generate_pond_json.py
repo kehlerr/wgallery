@@ -3,6 +3,7 @@
 import os, sys
 import json
 import config as cfg
+import update_pond_json as add_to_db
 
 if __name__ == "__main__":
      dir_name = sys.argv[1]
@@ -33,3 +34,7 @@ if __name__ == "__main__":
      if len(json_data) > 0:
           with open(dir_name + '.json', 'w+') as fp:
                json.dump(json_data, fp)
+
+     print('pond generated: %s') % dir_name
+
+     add_to_db.update_pond(dir_name)

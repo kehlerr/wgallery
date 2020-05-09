@@ -49,6 +49,8 @@ if __name__ == "__main__":
 		]
 
 		for p in old_json_data:
+			if not 'data' in p or len(p['data']) < 1:
+				continue
 			p_data = p['data'][0]
 			exctracted_new_post = {}
 			for k in exctract_json_keys:
