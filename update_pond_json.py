@@ -17,7 +17,8 @@ def update_pond(pond_uid):
 			'uid': pond_uid,
 			'overall_count': len(json_data['overall']),
 			'promo_count': len(json_data['promo']),
-			'todel_count': len(json_data['todel'])
+			'todel_count': len(json_data['todel']),
+			'type': 'type' in json_data and json_data['type'] or 'default'
 		}
 
 	with open(pond_json_fname, 'w+') as fp:

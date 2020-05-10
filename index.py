@@ -7,15 +7,19 @@ import cgi, cgitb
 import config as cfg
 
 
-def get_ponds():
+def get_ponds(pond_type):
     ponds = []
     with open(cfg.get_ponds_db(), 'r') as fp:
         db_json = json.load(fp)
         for v in db_json['ponds']:
-            ponds.append(db_json['ponds'][v])
-    return ponds
+            pond = db_json['ponds'][v]
+            if not pond_type or pond_type == pond['type']:
+                ponds.append(pond)
 
-def present():
+    sort_ponds = sorted(ponds, key=lambda i: i['overall_count'])
+    return sort_ponds
+
+def present(form_data):
     print "Content-type:text/html\r\n\r\n"
     print '''
 <html>
@@ -26,10 +30,24 @@ def present():
 </head>
 
 <body>
+    <div style="background-color:#b5e270;font-size: larger;margin-bottom: 5px;margin-right: 7;border-radius: 7px;padding: 5px;padding-left: 10px;">
+        <a style="text-decoration-color:darkslategrey" href="index.py">
+            <span style="color:darkslategrey"><b>Common</b></span>
+        </a>
+        <a style="text-decoration-color:darkviolet" href="index.py?type=profile">
+            <span style="color: darkviolet;">/Profiles</span>
+        </a>
+        <a style="text-decoration-color:dodgerblue" href="index.py?type=sound">
+            <span style="color: dodgerblue;">/Sounds</span>
+        </a>
+        <a style="text-decoration-color:forestgreen" href="index.py?type=custom">
+            <span style="color:forestgreen">/Custom</span>
+        </a>
+    </div>
     <div class="grid-container">
 '''
 
-    for p in get_ponds():
+    for p in get_ponds(form_data['ponds_type']):
         print '''
         <div class="grid-item">
             <a href="promote.py?uid=%s">
@@ -63,4 +81,9 @@ def create_count_info(t, p, d):
     print ''' </div> '''
 
 if __name__ == '__main__':
-    present()
+    form = cgi.FieldStorage()
+    form_data = {
+        'ponds_type':form.getvalue('type')
+    }
+
+    present(form_data)
