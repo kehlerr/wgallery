@@ -20,10 +20,12 @@ if __name__ == "__main__":
                exit(-1)
 
 
+     t = raw_input('Enter type of pond: ')
+
      os.chdir(dir_path)
      files_list = sorted(filter(os.path.isfile, os.listdir('.')), key=os.path.getmtime)
 
-     json_data = {'posts':{}, 'overall':[], 'promo':[], 'todel':[]}
+     json_data = {'posts':{}, 'overall':[], 'promo':[], 'todel':[], 'type':t}
      for fname in files_list:
           if cfg.is_video(fname):
                video_url = cfg.url_path + dir_name + '/' + fname

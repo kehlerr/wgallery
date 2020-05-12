@@ -71,11 +71,8 @@ class Page:
 
 
      def present(self):
-          if self.uid == 0:
-               index.present()
-          else:
-               self.present_heads()
-               self.present_body()
+          self.present_heads()
+          self.present_body()
 
      def present_heads(self):
           print "Content-type:text/html\r\n\r\n"
@@ -96,6 +93,13 @@ class Page:
           print "</html>"
 
      def create_main_form(self):
+          print '''
+          <div>
+               <span style="margin-left: 40%;margin-top: 0px;">
+                    <a href=index.py class="enjoy-css">INDEX</a>
+                    <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>
+               </span>
+          </div>'''
           print '''<form id="main" action="promote.py" method="POST">'''
           self.create_info_count()
           print '''<div class="grid-container">'''
@@ -103,12 +107,16 @@ class Page:
           print '''</div>'''
           print '''
           <div style="margin-top:10px">
-               <span style="margin-left: 35%;margin-top: 0px;">
+               <span style="margin-left: 32%;margin-top: 0px;">
                     <input class="enjoy-css" type="submit" name="back" value="<<">
                     <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>
                </span>
                <span>
-                    <input class="enjoy-css" name="next" type="submit" value="Submit>">
+                    <input class="enjoy-css" name="submit_next" type="submit" value="Submit>">
+                    <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>
+               </span>
+               <span>
+                    <input class="enjoy-css" name="next" type="submit" value=">>">
                     <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>
                </span>
           </div>'''
@@ -238,15 +246,14 @@ def get_form_data():
      form = cgi.FieldStorage() 
 
 # Get data from fields
-     offset_change = 0
-     if form.getvalue('back'):
-          offset_change = -1
-     elif form.getvalue('next'):
-          offset_change = 1
-
      data['src_list'] = form.getvalue('srcl')
+     data['val_back'] = form.getvalue('back')
+     data['val_next'] = form.getvalue('next')
+     data['val_submit_next'] = form.getvalue('submit_next')
+
      value_offset = form.getvalue('offset')
      prev_offset = value_offset and int(value_offset) or 0
+     offset_change = get_offset_change(data)
      curr_offset = prev_offset + cfg.videos_on_page*offset_change
      data['prev_offset'] = prev_offset
      data['offset'] = curr_offset
@@ -254,16 +261,32 @@ def get_form_data():
      data['promo'] = []
      data['todel'] = []
 
-     for i in range(cfg.videos_on_page):
-          val = form.getvalue('vid_num_'+str(i))
-          if val:
-               data['promo'].append(val)
-          else: 
-               val = form.getvalue('del_vid_num_'+str(i))
+     if need_process_checked(data):
+          for i in range(cfg.videos_on_page):
+               val = form.getvalue('vid_num_'+str(i))
                if val:
-                    data['todel'].append(val)
+                    data['promo'].append(val)
+               else: 
+                    val = form.getvalue('del_vid_num_'+str(i))
+                    if val:
+                         data['todel'].append(val)
 
      return data
+
+def get_offset_change(data):
+     offset_change = 0
+     if data['val_submit_next']:
+          if not (data['src_list'] == 'promo' or data['src_list'] == 'todel'):
+               offset_change = 1
+     elif data['val_back']:
+          offset_change = -1
+     elif data['val_next']:
+          offset_change = 1
+
+     return offset_change
+
+def need_process_checked(data):
+     return not data['val_next']
 
 if __name__ == '__main__':
      form_data = get_form_data()

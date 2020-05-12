@@ -53,7 +53,7 @@ def present(form_data):
             <a href="promote.py?uid=%s">
                 <div style="background-color:#b9ffdb;font-size:26;margin-bottom: 5px;margin-right: 7;border-radius: 7px;padding: 5px;padding-left: 10px;">
              %s</div> </a>''' % (p['uid'], p['uid'])
-        create_count_info(p['overall_count'], p['promo_count'], p['todel_count'])
+        create_count_info(p['uid'], p['overall_count'], p['promo_count'], p['todel_count'])
         print '''</div>'''
 
     print '''
@@ -62,20 +62,20 @@ def present(form_data):
     </html>'''
 
 
-def create_count_info(t, p, d):
+def create_count_info(uid, t, p, d):
     print ''' <div>
     <a style="text-decoration-color:darkslategrey"
-    href=promote.py?uid=%s>''' % "self.uid"
+    href=promote.py?uid=%s>''' % uid
     print '''<span style="color:darkslategrey">%d</span></a></b>''' % t
 
     if p > 0:
         print '''<a style="text-decoration-color:green"
-        href=promote.py?uid=%s&srcl=promo>''' % "self.uid"
+        href=promote.py?uid=%s&srcl=promo>''' % uid
         print ''' <span style="color:green">/<b>%d</b></span></a>''' % p
 
     if d > 0:
         print '''<a style="text-decoration-color:#e01632"
-        href=promote.py?uid=%s&srcl=todel>''' % "self.uid"
+        href=promote.py?uid=%s&srcl=todel>''' % uid
         print '''<span style="color:#e01632">/<b>%d</b></span></a>''' % d
 
     print ''' </div> '''

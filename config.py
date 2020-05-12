@@ -9,7 +9,7 @@ list_file_ext = '.url'
 json_file_ext = '.json'
 max_refs_count = 30
 
-videos_on_page = 30
+videos_on_page = 27
 video_exts = [ '.mp4', '.webm' ]
 
 def is_file_with_urls(filename):
@@ -32,11 +32,11 @@ def is_uid_dir(uid, d):
      template_uid_dir = re.compile('^'+uid+'[^0-9].*')
      return template_uid_dir.match(d)
 
-def get_profile_dir(int_id):
+def get_pond_dir(int_id):
      uid = str(int_id)
-     profiledir_path = os.path.join(wip_path, uid, '')
-     if os.path.isdir(profiledir_path):
-          return profiledir_path
+     dir_path = os.path.join(wip_path, uid, '')
+     if os.path.isdir(dir_path):
+          return dir_path
      else:
           for dirname in glob(os.path.join(wip_path, '*', '')):
                if is_uid_dir(uid, dirname):
@@ -44,7 +44,7 @@ def get_profile_dir(int_id):
 
 def get_json_pond_file(uid):
      listfile_name = str(uid)+json_file_ext
-     dirname = get_profile_dir(uid) or ''
+     dirname = get_pond_dir(uid) or ''
      return dirname + listfile_name
 
 def is_video(fname):
