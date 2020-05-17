@@ -19,8 +19,12 @@ class Page:
           self.json_pond = {}
           self.json_pond_fname = cfg.get_json_pond_file(self.uid)
           self.load_json_pond()
-
           self.posts = self.json_pond['posts']
+
+          self.migrate()
+          if form_data['need_checkout']:
+               self.checkout()
+
           self.overall = self.json_pond['overall']
           self.promo = self.json_pond['promo']
           self.todel = self.json_pond['todel']
@@ -43,23 +47,55 @@ class Page:
                with open(self.json_pond_fname, 'r') as fp:
                     self.json_pond = json.load(fp)
 
+     def migrate(self):
+          for pid in self.json_pond['promo']:
+               if not 'checked' in self.json_pond['posts'][pid]:
+                    self.json_pond['posts'][pid]['checked'] = { 'promo':1 }
+          for pid in self.json_pond['todel']:
+               if not 'checked' in self.json_pond['posts'][pid]:
+                    self.json_pond['posts'][pid]['checked'] = { 'todel':1 }
+
+
+     def checkout(self):
+          new_posts = []
+          current_list = self.json_pond[self.src_list]
+          for pid in current_list:
+               post = self.json_pond['posts'][pid]
+               if 'checked' in post and self.src_list in post['checked']:
+                    val = post['checked'][self.src_list]
+                    if val == 1:
+                         new_posts.append(pid)
+                    if val == 2:
+                         post['checked'].pop(self.src_list)
+
+          self.json_pond[self.src_list] = list(new_posts)
+
      def process_checked(self, data, l_type):
-          if len(data) > 0:
+          checked_count = len(data)
+          if checked_count > 0:
+               lst = self[l_type]
                for n in data:
                     post = self.get_post_by_number(int(n), self.src_list)
-                    lst = self[l_type]
-                    if not self.is_post_checked(post, l_type):
-                        lst.append(post['postId'])
+                    if not 'checked' in post:
+                         post['checked'] = {}
+                    if l_type in post['checked']:
+                         val = post['checked'][l_type]
+                         if val == 1:
+                              post['checked'][l_type] = 2
+                         elif val == 2:
+                              post['checked'][l_type] = 1
                     else:
-                        lst.remove(post['postId'])
+                         post['checked'][l_type] = 1
+                         lst.append(post['postId'])
 
      def dump_pond(self):
           with open(self.json_pond_fname, 'w+') as fp:
                json.dump(self.json_pond, fp)
 
      def is_post_checked(self, p, l_type):
-          lst = self[l_type]
-          return p['postId'] in lst
+          if 'checked' in p:
+               return l_type in p['checked'] and p['checked'][l_type] == 1
+          return False
 
      def get_post_by_number(self, n, l_type):
           lst = self[l_type]
@@ -96,7 +132,7 @@ class Page:
           print '''
           <div>
                <span style="margin-left: 40%;margin-top: 0px;">
-                    <a href=index.py class="enjoy-css">INDEX</a>
+                    <a href=index.py class="enjoy-css" style="padding:10px">INDEX</a>
                     <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>
                </span>
           </div>'''
@@ -133,16 +169,16 @@ class Page:
                href=promote.py?uid=%s>''' % self.uid
           overall_count = len(self.overall)
           print '''<span style="color:darkslategrey">Total posts: %d</span></a></b>''' % (overall_count)
-          checked_count = len(self.promo)
+          checked_count = len(self.json_pond['promo'])
           if checked_count > 0:
                print '''<a style="text-decoration-color:green"
-               href=promote.py?uid=%s&srcl=promo>''' % self.uid
+               href=promote.py?uid=%s&srcl=promo&need_checkout=1>''' % self.uid
                print ''' <span style="color:green">/ checked: <b>%d</b></span></a>''' % (checked_count)
 
-          todelete_count = len(self.todel)
+          todelete_count = len(self.json_pond['todel'])
           if todelete_count > 0:
                print '''<a style="text-decoration-color:#e01632"
-               href=promote.py?uid=%s&srcl=todel>''' % self.uid
+               href=promote.py?uid=%s&srcl=todel&need_checkout=1>''' % self.uid
                print '''<span style="color:#e01632">/ todelete: <b>%d</b></span></a>''' % (todelete_count)
           print ''' </div> '''
 
@@ -250,6 +286,7 @@ def get_form_data():
      data['val_back'] = form.getvalue('back')
      data['val_next'] = form.getvalue('next')
      data['val_submit_next'] = form.getvalue('submit_next')
+     data['need_checkout'] = form.getvalue('need_checkout')
 
      value_offset = form.getvalue('offset')
      prev_offset = value_offset and int(value_offset) or 0
@@ -276,8 +313,7 @@ def get_form_data():
 def get_offset_change(data):
      offset_change = 0
      if data['val_submit_next']:
-          if not (data['src_list'] == 'promo' or data['src_list'] == 'todel'):
-               offset_change = 1
+          offset_change = 1
      elif data['val_back']:
           offset_change = -1
      elif data['val_next']:
