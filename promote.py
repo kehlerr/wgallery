@@ -31,13 +31,13 @@ class Page:
 
           self.process_checked(form_data['promo'], 'promo')
           self.process_checked(form_data['todel'], 'todel')
-          self.dump_pond()
 
           self.posts_count = len(self[self.src_list])
           self.offset = form_data['offset']
           if self.offset > self.posts_count or self.offset < 0:
                self.offset = form_data['prev_offset']
           self.posts_on_page_count = min(cfg.videos_on_page, self.posts_count - self.offset)
+          self.dump_pond()
 
      def __getitem__(self, item):
           return getattr(self, item)
@@ -55,7 +55,6 @@ class Page:
                if not 'checked' in self.json_pond['posts'][pid]:
                     self.json_pond['posts'][pid]['checked'] = { 'todel':1 }
 
-
      def checkout(self):
           new_posts = []
           current_list = self.json_pond[self.src_list]
@@ -69,6 +68,13 @@ class Page:
                          post['checked'].pop(self.src_list)
 
           self.json_pond[self.src_list] = list(new_posts)
+
+     def update_pond_info(self):
+          self.json_pond['info']['promo_count'] = len(self.json_pond['promo'])
+          self.json_pond['info']['todel_count'] = len(self.json_pond['todel'])
+          last_offset = 'last_offset' in self.json_pond['info'] and self.json_pond['info']['last_offset']
+          if self.offset > last_offset:
+               self.json_pond['info']['last_offset'] = last_offset
 
      def process_checked(self, data, l_type):
           checked_count = len(data)
