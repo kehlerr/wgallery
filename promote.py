@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import os.path
 import json
 
@@ -117,32 +115,32 @@ class Page:
           self.present_body()
 
      def present_heads(self):
-          print "Content-type:text/html\r\n\r\n"
-          print '''<html>
+          print("Content-type:text/html\r\n\r\n")
+          print('''<html>
                     <head>
                          <title>Likee - save videos!</title>
                          <link rel="stylesheet" type="text/css" href="css/common.css"/>
                          <link rel="stylesheet" type="text/css" href="css/post_cell.css"/>
-                    </head>'''
+                    </head>''')
 
      def present_body(self):
-          print '''<body style="font-family:'Roboto',Verdana,Geneva,sans-serif">'''
+          print('''<body style="font-family:'Roboto',Verdana,Geneva,sans-serif">''')
 
           self.create_main_form()
           self.create_navigations_refs()
  
-          print "</body>"
-          print "</html>"
+          print("</body>")
+          print("</html>")
 
      def create_main_form(self):
-          print '''
+          print('''
           <div>
                <span style="margin-left: 40%;margin-top: 0px;">
                     <a href=index.py class="enjoy-css" style="padding:10px">INDEX</a>
                     <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>
                </span>
-          </div>'''
-          print '''<form id="main" action="promote.py" method="POST">'''
+          </div>''')
+          print('''<form id="main" action="promote.py" method="POST">''')
           self.create_info_count()
           print '''<div class="grid-container">'''
           self.create_videos()
@@ -213,7 +211,7 @@ class Page:
           elif self.is_post_checked(post_data, 'todel'):
                item_class = 'post-cell_deleted'
 
-          print '''<div class="%s">''' % (item_class)
+          print('''<div class="%s">''') % (item_class)
           print ''' 
           <div class="sidebar_left">
                <label class="container" style="margin-top:200px">

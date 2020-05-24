@@ -1,8 +1,8 @@
 .post-cell {
     display: grid;
     padding-top: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.8);
-    background-color: #c8c8fd;
+    border: 1px dashed #47bdce;
+    background-color: #d2f6fb;
     grid-template-rows: 180px 180px 40px;
     grid-template-columns: auto 220px auto;
     grid-template-areas:
@@ -14,8 +14,8 @@
 .post-cell_promoted {
     display: grid;
     padding-top: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.8);
-    background-color: #4aff68;
+    border: 1px solid #00cc80;
+    background-color: #71ffbc;
     grid-template-rows: 180px 180px 40px;
     grid-template-columns: auto 220px auto;
     grid-template-areas:
@@ -27,8 +27,8 @@
 .post-cell_deleted {
     display: grid;
     padding-top: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.8);
-    background-color: #ff7d7d;
+    border: 1px solid #fd5fa1;
+    background-color: #ffa6cf;
     grid-template-rows: 180px 180px 40px;
     grid-template-columns: auto 220px auto;
     grid-template-areas:

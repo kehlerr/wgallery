@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import os, sys
 import json
 import config as cfg
@@ -26,7 +24,7 @@ def update_pond(pond_uid):
 
 	cfg.update_ponds_db(pond_uid, json_data['info'])
 
-	print('pond updated: %s') % pond_uid
+	print(f'pond updated: {pond_uid}')
 
 
 if __name__ == "__main__":

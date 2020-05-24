@@ -20,8 +20,8 @@ def get_ponds(pond_type):
     return sort_ponds
 
 def present(form_data):
-    print "Content-type:text/html\r\n\r\n"
-    print '''
+    print('''Content-type:text/html\r\n\r\n''')
+    print('''
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -45,40 +45,40 @@ def present(form_data):
         </a>
     </div>
     <div class="grid-container">
-'''
+''')
 
     for p in get_ponds(form_data['ponds_type']):
-        print '''
+        print('''
         <div class="grid-item">
             <a href="promote.py?uid=%s">
                 <div style="background-color:#b9ffdb;font-size:26;margin-bottom: 5px;margin-right: 7;border-radius: 7px;padding: 5px;padding-left: 10px;">
-             %s</div> </a>''' % (p['uid'], p['uid'])
+             %s</div> </a>''') % (p['uid'], p['uid'])
         create_count_info(p['uid'], p['overall_count'], p['promo_count'], p['todel_count'])
-        print '''</div>'''
+        print('''</div>''')
 
-    print '''
+    print('''
      </div>
     </body>
-    </html>'''
+    </html>''')
 
 
 def create_count_info(uid, t, p, d):
-    print ''' <div>
+    print(''' <div>
     <a style="text-decoration-color:darkslategrey"
-    href=promote.py?uid=%s>''' % uid
-    print '''<span style="color:darkslategrey">%d</span></a></b>''' % t
+    href=promote.py?uid=%s>''') % uid
+    print('''<span style="color:darkslategrey">%d</span></a></b>''') % t
 
     if p > 0:
-        print '''<a style="text-decoration-color:green"
-        href=promote.py?uid=%s&srcl=promo>''' % uid
-        print ''' <span style="color:green">/<b>%d</b></span></a>''' % p
+        print('''<a style="text-decoration-color:green"
+        href=promote.py?uid=%s&srcl=promo>''') % uid
+        print(''' <span style="color:green">/<b>%d</b></span></a>''') % p
 
     if d > 0:
-        print '''<a style="text-decoration-color:#e01632"
-        href=promote.py?uid=%s&srcl=todel>''' % uid
-        print '''<span style="color:#e01632">/<b>%d</b></span></a>''' % d
+        print('''<a style="text-decoration-color:#e01632"
+        href=promote.py?uid=%s&srcl=todel>''') % uid
+        print('''<span style="color:#e01632">/<b>%d</b></span></a>''') % d
 
-    print ''' </div> '''
+    print(''' </div> ''')
 
 if __name__ == '__main__':
     form = cgi.FieldStorage()

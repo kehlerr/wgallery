@@ -3,8 +3,8 @@
 import re, os, json
 from glob import glob
 
-wip_path = '/var/www/html/cgi-enabled/datadump_path/.promodump/likee_wip/' 
-url_path = 'http://192.168.0.4/cgi-enabled/datadump_path/.promodump/likee_wip'
+wip_path = 'static/ponds/'
+url_path = 'ponds/'
 list_file_ext = '.url'
 json_file_ext = '.json'
 max_refs_count = 30
@@ -60,11 +60,11 @@ def ask_confirm(prompt=None, resp=False):
           prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
           
      while True:
-          ans = raw_input(prompt)
+          ans = input(prompt)
           if not ans:
                return resp
           if ans not in ['y', 'Y', 'n', 'N']:
-               print 'please enter y or n.'
+               print('please enter y or n.')
                continue
           if ans == 'y' or ans == 'Y':
                return True

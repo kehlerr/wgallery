@@ -3,12 +3,23 @@ body {
          background-attachment: fixed;
          background-size: cover;
 }
+
+.panel-row {
+        background-color:#cdbdff;
+        font-size: larger;
+        margin-bottom: 5px;
+        border-radius:10px;
+        padding: 10px;
+        width:98%;
+}
+
 .grid-container {
          display: grid;
          grid-template-columns: auto auto auto;
-         background-color: #291a3e;
+         background-color: #c6b4fd;
          padding: 10px;
          width: 98%;
+         border-radius:10px
 }
 
 .grid-item {
@@ -75,9 +86,10 @@ transition: background-color 0.3s cubic-bezier(0, 0, 0, 0), color 0.3s cubic-bez
 
 .container {
   display: block;
-  margin-left: 32%;
   cursor: pointer;
   font-size: 22px;
+  width: 80%;
+  text-align: center;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -98,12 +110,13 @@ transition: background-color 0.3s cubic-bezier(0, 0, 0, 0), color 0.3s cubic-bez
   position: absolute;
   height: 25px;
   width: 25px;
-  background-color: #ffafaf;
+  background-color: #ec6565;
+  border-radius: 11px;
 }
 
 /* On mouse-over, add a grey background color */
 .container:hover input ~ .checkmark_todel {
-  background-color: #ff6b6b;
+  background-color: #ff4242;
 }
 
 /* When the checkbox is checked, add a blue background */
@@ -140,17 +153,18 @@ transition: background-color 0.3s cubic-bezier(0, 0, 0, 0), color 0.3s cubic-bez
   position: absolute;
   height: 40px;
   width: 40px;
-  background-color: #afffff;
+  background-color: #00e279;
+  border-radius: 17px;
 }
 
-/* On mouse-over, add a grey background color */
+/* On mouse-over*/
 .container:hover input ~ .checkmark_promote {
-  background-color: #67ff96;
+  background-color: #00d284;
 }
 
-/* When the checkbox is checked, add a blue background */
+/* When the checkbox is checked*/
 .container input:checked ~ .checkmark_promote {
-  background-color: #00ff22;
+  background-color: #21c73b;
 }
 
 /* Create the checkmark/indicator (hidden when not checked) */
