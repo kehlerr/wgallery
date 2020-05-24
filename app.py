@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, url_for
 from index import get_ponds
-import promote_page
+import promotion
 
 app = Flask(__name__)
 
@@ -16,15 +16,15 @@ def index():
 @app.route('/promote/<string:uid>', methods=['GET', 'POST'])
 def promote(uid):
     if request.method == 'POST':
-        form_data = promote_page.get_promote_data(request.form)
+        request_data = request.form
     else:
-        form_data = promote_page.get_promote_data(request.args)
-    form_data['url_id'] = uid
-    page = promote_page.Page(form_data)
+        request_data = request.args
+
+    pond_obj = promotion.PondJSON(uid)
+    request_handler_obj = promotion.RequestHadler(request_data, pond_obj)
+    request_handler_obj.handle()
+    page = promotion.PageData(pond_obj, request_handler_obj)
     return render_template('promote.html', page=page)
-
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)

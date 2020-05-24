@@ -58,7 +58,7 @@
 {% endmacro %}
 
 
-{% macro create_navigations_panel(info) %}
+{% macro create_navigation_panel(info) %}
     <div class="panel-row">
         <table>
             <tbody>
@@ -95,16 +95,16 @@
                 <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>
         </span>
     </div>
-    {{ create_info_panel(page.pond_info) }}
-    {% set nav_info = page.get_navigation_data() %}
-    <form id="main" action="{{url_for('promote', uid=nav_info['uid'])}}" method="POST">
-        <input type="hidden" name="offset" value="{{ nav_info['current_offset']}}">
-    {% if nav_info['src_list'] | length > 0 and nav_info['src_list'] != 'overall' %}
-        <input type="hidden" name="srcl" value="{{nav_info['src_list']}}">
+    {% set pond_info = page.get_pond_info() %}
+    {{ create_info_panel(pond_info) }}
+    <form id="main" action="{{url_for('promote', uid=pond_info['uid'])}}" method="POST">
+        <input type="hidden" name="offset" value="{{ pond_info['current_offset']}}">
+    {% if pond_info['src_list'] | length > 0 and pond_info['src_list'] != 'overall' %}
+        <input type="hidden" name="srcl" value="{{pond_info['src_list']}}">
     {% endif %}
 
         <div class="grid-container">
-            {{ render_posts(page.posts_on_page, nav_info['current_offset']) }}
+            {{ render_posts(page.get_posts(), pond_info['current_offset']) }}
         </div>
 
         <div style="margin-top:10px;text-align:center">
@@ -119,7 +119,7 @@
         </div>
     </form>
 
-    {{ create_navigations_panel(nav_info) }}
+    {{ create_navigation_panel(pond_info) }}
 
 </body>
 </html>
