@@ -34,11 +34,11 @@ class PondJSON:
 
     def migrate(self):
         for pid in self.pond['promo']:
-            if not 'checked' in self.pond['posts'][pid]:
-                    self.pond['posts'][pid]['checked'] = { 'promo': 1 }
+            if 'checked' not in self.pond['posts'][pid]:
+                    self.pond['posts'][pid]['checked'] = {'promo': 1}
         for pid in self.pond['todel']:
-            if not 'checked' in self.pond['posts'][pid]:
-                    self.pond['posts'][pid]['checked'] = { 'todel': 1 }
+            if 'checked' not in self.pond['posts'][pid]:
+                    self.pond['posts'][pid]['checked'] = {'todel': 1}
 
     def checkout(self, list_type):
         new_posts = []
@@ -55,7 +55,7 @@ class PondJSON:
         self.pond[list_type] = list(new_posts)
 
     def check_post(self, post, list_type):
-        if not 'checked' in post:
+        if 'checked' not in post:
             post['checked'] = {}
 
         checked_val = self.get_post_checked_value_in_list(post, list_type)
@@ -68,7 +68,6 @@ class PondJSON:
             post['checked'][list_type] = 1
             lst = self[list_type]
             lst.append(post['postId'])
-
 
     def is_post_checked_in_list(self, post, list_type):
         return self.get_post_checked_value_in_list(post, list_type) == 1
@@ -106,7 +105,6 @@ class PondJSON:
                     return self.posts[postId]
 
 
-
 class RequestHadler:
     def __init__(self, request_form, pond):
         self.request_data = {}
@@ -114,15 +112,14 @@ class RequestHadler:
         self.fill_request_data(request_form)
         self.pond = pond
 
-
     def fill_request_data(self, request_form):
-        self.request_data['val_back'] = request_form.get('back', default = None)
-        self.request_data['val_next'] = request_form.get('next', default = None)
-        self.request_data['val_submit_next'] = request_form.get('submit_next', default = None)
+        self.request_data['val_back'] = request_form.get('back', default=None)
+        self.request_data['val_next'] = request_form.get('next', default=None)
+        self.request_data['val_submit_next'] = request_form.get('submit_next')
         offset_change = self.get_offset_change()
- 
-        prev_offset = request_form.get('offset', default = 0, type = int)
-        curr_offset = prev_offset + cfg.videos_on_page*offset_change
+
+        prev_offset = request_form.get('offset', default=0, type=int)
+        curr_offset = prev_offset + cfg.posts_on_page*offset_change
         self.request_data['offset'] = curr_offset
         self.request_data['prev_offset'] = prev_offset
 
@@ -132,12 +129,12 @@ class RequestHadler:
         self.request_data['promo'] = []
         self.request_data['todel'] = []
         if self.need_process_checked():
-            for i in range(cfg.videos_on_page+1):
-                val = request_form.get(f'vid_num_{i}', type = int)
+            for i in range(cfg.posts_on_page+1):
+                val = request_form.get(f'post_n_{i}', type=int)
                 if val:
                     self.request_data['promo'].append(val)
-                else: 
-                    val = request_form.get(f'del_vid_num_{i}', type = int)
+                else:
+                    val = request_form.get(f'del_post_n_{i}', type=int)
                     if val:
                             self.request_data['todel'].append(val)
 
@@ -155,7 +152,6 @@ class RequestHadler:
     def need_process_checked(self):
         return not self.request_data['val_next']
 
-
     def handle(self):
         self.set_page_params()
 
@@ -169,10 +165,11 @@ class RequestHadler:
         self.pond.dump()
 
     def process_checked(self, l_type):
-        data = self.request_data.get(l_type)
-        for n in data:
-                post = self.pond.get_post_by_number(n, self.request_data['src_list'])
-                self.pond.check_post(post, l_type)
+        checked_data = self.request_data.get(l_type)
+        for n in checked_data:
+            src_list = self.request_data['src_list']
+            post = self.pond.get_post_by_number(n, src_list)
+            self.pond.check_post(post, l_type)
 
     def set_page_params(self):
         src_list_type = self.request_data['src_list']
@@ -202,31 +199,32 @@ class RequestHadler:
     #         self.json_pond['info']['last_offset'] = last_offset
 
 
-
 class PageData:
     def __init__(self, pond, request_handler):
         self.pond = pond
         request_params = request_handler.get_page_params()
 
         self.src_list_type = request_params['src_list']
-        self.posts_count = request_params['posts_count']
+        self.total_posts_count = request_params['posts_count']
         self.offset = request_params['offset']
-        self.posts_on_page_count = min(cfg.videos_on_page, self.posts_count - self.offset)
-
+        posts_remaining_count = self.total_posts_count - self.offset
+        self.posts_page_count = min(cfg.posts_on_page, posts_remaining_count)
 
     def get_posts(self):
         posts_on_page = []
-        for idx in range(self.posts_on_page_count):
-            vid_num = self.offset + idx
-            post = self.pond.get_post_by_number(vid_num, self.src_list_type)
+        for idx in range(self.posts_page_count):
+            post_num = self.offset + idx
+            post = self.pond.get_post_by_number(post_num, self.src_list_type)
             posts_on_page.append(post)
 
         return posts_on_page
 
     def get_pond_info(self):
-        current_page_idx = self.offset / cfg.videos_on_page + 1
-        left_idx = max(0, current_page_idx - cfg.max_refs_count/2+1)
-        refs_count = int(min(self.posts_count / cfg.videos_on_page + 1 - left_idx, cfg.max_refs_count))
+        current_page_idx = self.offset / cfg.posts_on_page + 1
+        left_idx = max(0, current_page_idx - cfg.max_refs_count / 2 + 1)
+        total_refs_count = int(self.total_posts_count / cfg.posts_on_page)
+        current_offset_refs_count = total_refs_count + 1 - left_idx
+        refs_count = min(current_offset_refs_count, cfg.max_refs_count)
 
         return {
             'uid': self.pond.uid,
@@ -234,9 +232,8 @@ class PageData:
             'refs_count': refs_count,
             'left_idx': left_idx,
             'current_offset': self.offset,
-            'page_step': cfg.videos_on_page,
+            'page_step': cfg.posts_on_page,
             'overall_count': self.pond.get_count_posts('overall'),
             'promo_count': self.pond.get_count_posts('promo'),
             'todel_count': self.pond.get_count_posts('todel')
         }
-

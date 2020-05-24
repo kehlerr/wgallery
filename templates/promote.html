@@ -12,7 +12,7 @@
             <div class="{{ cell_class }}">
                 <div class="sidebar_left">
                     <label class="container" style="margin-top:200px">
-                        <input type="checkbox" name="del_vid_num_{{ loop.index }}" value="{{ loop.index0 + offset }}">
+                        <input type="checkbox" name="del_post_n_{{ loop.index }}" value="{{ loop.index0 + offset }}">
                         <span class="checkmark_todel"></span>
                     </label>
                 </div>
@@ -24,7 +24,7 @@
                 <div class="sidebar_right">
                     <div style="margin-top:10px">
                         <label class="container">
-                            <input type="checkbox" name="vid_num_{{ loop.index }}" value="{{ loop.index0 + offset }}">
+                            <input type="checkbox" name="post_n_{{ loop.index }}" value="{{ loop.index0 + offset }}">
                             <span class="checkmark_promote"></span>
                         </label>
                     </div>
@@ -41,16 +41,16 @@
 
 {% macro create_info_panel(info) %}
     <div class="panel-row">
-        <a style="text-decoration-color:darkslategrey" href="{{ url_for('promote', uid=info['uid']) }}">
+        <a class="fancy-button" href="{{ url_for('promote', uid=info['uid']) }}">
             <span style="color:darkslategrey">Total posts: <b>{{ info['overall_count'] }}</b></span>
         </a>
     {% if info['promo_count'] > 0 %}
-        <a style="text-decoration-color:green" href="{{ url_for('promote', uid=info['uid'], srcl='promo', need_checkout=1) }}">
+        <a class="fancy-button" href="{{ url_for('promote', uid=info['uid'], srcl='promo', need_checkout=1) }}">
             <span style="color:green">/ promote: <b> {{ info['promo_count'] }} </b></span>
         </a>
     {% endif %}
     {% if info['todel_count'] > 0 %}
-        <a style="text-decoration-color:#e01632" href="{{ url_for('promote', uid=info['uid'], srcl='todel', need_checkout=1) }}">
+        <a class="fancy-button" href="{{ url_for('promote', uid=info['uid'], srcl='todel', need_checkout=1) }}">
             <span style="color:#e01632">/ todelete: <b>{{ info['todel_count'] }}</b></span>
         </a>
     {% endif %}
@@ -86,6 +86,7 @@
         <title>Save videos!</title>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/common.css')}}"/>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/post_cell.css')}}"/>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/buttons.css')}}"/>
     </head>
 
 <body style="font-family:'Roboto',Verdana,Geneva,sans-serif; background-color:#cbe0ff;">
