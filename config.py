@@ -7,8 +7,8 @@ wip_path = 'static/ponds/'
 url_path = 'ponds/'
 list_file_ext = '.url'
 json_file_ext = '.json'
-max_refs_count = 30
-posts_on_page = 27
+max_refs_count = 14
+posts_on_page = 15
 video_exts = ['.mp4', '.webm']
 
 

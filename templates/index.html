@@ -3,21 +3,22 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Welcome, master</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/common.css')}}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/buttons.css')}}"/>
 </head>
 
 <body>
-    <div style="background-color:#b5e270;font-size: larger;margin-bottom: 5px;margin-right: 7;border-radius: 7px;padding: 5px;padding-left: 10px;">
-        <a style="text-decoration-color:darkslategrey" href="{{ url_for('index') }}">
+    <div class="panel-row">
+        <a class="fancy-button" href="{{ url_for('index') }}">
             <span style="color:darkslategrey"><b>Common</b></span>
         </a>
-        <a style="text-decoration-color:darkviolet" href="{{ url_for('index', type='profile') }}">
-            <span style="color: darkviolet;">/Profiles</span>
+        <a class="fancy-button" href="{{ url_for('index', type='profile') }}">
+            <span style="color: #d80000;">Profiles</span>
         </a>
-        <a style="text-decoration-color:dodgerblue" href="{{ url_for('index', type='sound') }}">
-            <span style="color: dodgerblue;">/Sounds</span>
+        <a class="fancy-button" href="{{ url_for('index', type='sound') }}">
+            <span style="color: #000e71;">Sounds</span>
         </a>
-        <a style="text-decoration-color:forestgreen" href="{{ url_for('index', type='custom') }}">
-            <span style="color:forestgreen">/Custom</span>
+        <a class="fancy-button" href="{{ url_for('index', type='custom') }}">
+            <span style="color:#73006a">Custom</span>
         </a>
     </div>
     <div class="grid-container">
@@ -40,6 +41,8 @@
                         <a style="text-decoration-color:#e01632" href=promote.py?uid=%s&srcl=todel>
                         <span style="color:#e01632">/<b>{{ p['todel_count'] }}</b></span></a>
                     {% endif %}
+                </div>
+            </div>
         {% endfor %}
      </div>
 </body>

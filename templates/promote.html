@@ -46,14 +46,24 @@
         </a>
     {% if info['promo_count'] > 0 %}
         <a class="fancy-button" href="{{ url_for('promote', uid=info['uid'], srcl='promo', need_checkout=1) }}">
-            <span style="color:green">/ promote: <b> {{ info['promo_count'] }} </b></span>
+            <span style="color:green">promote: <b> {{ info['promo_count'] }} </b></span>
         </a>
     {% endif %}
     {% if info['todel_count'] > 0 %}
         <a class="fancy-button" href="{{ url_for('promote', uid=info['uid'], srcl='todel', need_checkout=1) }}">
-            <span style="color:#e01632">/ todelete: <b>{{ info['todel_count'] }}</b></span>
+            <span style="color:#e01632">todelete: <b>{{ info['todel_count'] }}</b></span>
         </a>
     {% endif %}
+        <span style="float:right">
+            <a class="fancy-button-red" href="{{ url_for('promote', uid=info['uid'], srcl='todel', need_checkout=1) }}">
+                <span><b>delete</b></span>
+            </a>
+        </span>
+        <span style="float:right">
+            <a class="fancy-button-green" href="{{ url_for('promote', uid=info['uid'], srcl='promo', need_checkout=1) }}">
+                <span><b>promote</b></span>
+            </a>
+        </span>
     </div>
 {% endmacro %}
 
@@ -64,17 +74,30 @@
             <tbody>
                 <tr valign="top">
                 {% for idx in range(info['refs_count']) %}
-                    <td style="width:35px">
+                    <td>
                     {% set offset = info['page_step']*(info['left_idx']+idx) %}
-                    {% if offset != info['current_offset'] %}
-                        <a href="{{ url_for('promote', uid=info['uid'], srcl=info['srcl'], offset=offset) }}">
-                            {{ offset }}
-                        </a>
-                    {% else %}
-                        {{ offset }}
+                    {% if offset != info['last_ref_offset'] %}
+                        {% if offset != info['current_offset'] %}
+                            <a style="margin-right: 2px; padding:12px 8px;" class="fancy-button"
+                                href="{{ url_for('promote', uid=info['uid'], srcl=info['srcl'], offset=offset) }}">
+                                <span style="color:darkslategrey">
+                                    <b>{{ offset }}</b>
+                                </span>
+                            </a>
+                        {% else %}
+                            <span class="fancy-button-green" style="height: 33px; margin-right: 8px; margin-left: 8px">
+                                <b>{{ offset }}</b>
+                            </span>
+                        {% endif %}
                     {% endif %}
                     </td>
                 {% endfor %}
+                <span style="float:right">
+                    <a style="margin-left: 15px; padding:12px 8px;" class="fancy-button-red"
+                        href="{{ url_for('promote', uid=info['uid'], srcl=info['srcl'], offset=info['last_ref_offset']) }}">
+                        <b>{{ info['last_ref_offset'] }}</b>
+                    </a>
+                </span>
                 </tr>
             </tbody>
         </table>

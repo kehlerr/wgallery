@@ -222,17 +222,19 @@ class PageData:
     def get_pond_info(self):
         current_page_idx = self.offset / cfg.posts_on_page + 1
         left_idx = max(0, current_page_idx - cfg.max_refs_count / 2 + 1)
-        total_refs_count = int(self.total_posts_count / cfg.posts_on_page)
+        total_refs_count = self.total_posts_count//cfg.posts_on_page
         current_offset_refs_count = total_refs_count + 1 - left_idx
         refs_count = min(current_offset_refs_count, cfg.max_refs_count)
+        last_ref_offset = total_refs_count*cfg.posts_on_page
 
         return {
             'uid': self.pond.uid,
             'src_list': self.src_list_type,
             'refs_count': refs_count,
-            'left_idx': left_idx,
+            'left_idx': int(left_idx),
             'current_offset': self.offset,
-            'page_step': cfg.posts_on_page,
+            'last_ref_offset': last_ref_offset,
+            'page_step': int(cfg.posts_on_page),
             'overall_count': self.pond.get_count_posts('overall'),
             'promo_count': self.pond.get_count_posts('promo'),
             'todel_count': self.pond.get_count_posts('todel')
