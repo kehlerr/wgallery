@@ -1,6 +1,7 @@
 #!/usr/bin/python3.7
 import os
 import sys
+import shutil
 import json
 import config as cfg
 import update_pond_json as add_to_db
@@ -22,8 +23,9 @@ if __name__ == "__main__":
             exit(-1)
         else:
             with open(pond_json_fname, 'r') as fp:
-                json_data = json.load(fp)
-                existed_type = json_data['info']['type']
+                prev_data = json.load(fp)
+
+            shutil.copy2(pond_json_fname, f'{pond_json_fname}~')
 
     start_cd = os.getcwd()
     os.chdir(dir_path)
@@ -31,8 +33,12 @@ if __name__ == "__main__":
         filter(os.path.isfile, os.listdir('.')),
         key=os.path.getmtime)
 
-    t = input(f'Enter type of pond [{existed_type}]') or existed_type
-
+    if prev_data:
+        print('Current checked data will be saved')
+        prev_type = prev_data['info']['type']
+        prev_promo = prev_data['promo']
+        prev_todel = prev_data['todel']
+    t = input(f'Enter type of pond [{prev_type}]') or prev_type
     if not t or len(t) <= 0:
         print('none type of pond! try later...')
         exit(-1)
@@ -40,8 +46,8 @@ if __name__ == "__main__":
     json_data = {
         'posts': {},
         'overall': [],
-        'promo': [],
-        'todel': [],
+        'promo': prev_promo or [],
+        'todel': prev_todel or [],
         'type': t
     }
 

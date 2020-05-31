@@ -11,6 +11,12 @@ max_refs_count = 14
 posts_on_page = 15
 video_exts = ['.mp4', '.webm']
 
+check_lists = [
+    { 'type': 'overall' },
+    { 'type': 'promo' },
+    { 'type': 'todel' }
+]
+
 
 def is_file_with_urls(filename):
     template_url_file = re.compile('[a-zA-Z0-9_]+'+list_file_ext)

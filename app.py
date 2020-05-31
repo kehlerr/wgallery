@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, url_for
 import config as cfg
 import promotion
+import pond_json as pj
 
 app = Flask(__name__)
 
@@ -21,7 +22,7 @@ def promote(uid):
     else:
         request_data = request.args
 
-    pond_obj = promotion.PondJSON(uid)
+    pond_obj = pj.PondJSON(uid)
     request_handler_obj = promotion.RequestHadler(request_data, pond_obj)
     request_handler_obj.handle()
     page = promotion.PageData(pond_obj, request_handler_obj)

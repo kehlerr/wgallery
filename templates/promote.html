@@ -12,27 +12,37 @@
             <div class="{{ cell_class }}">
                 <div class="sidebar_left">
                     <label class="container" style="margin-top:200px">
-                        <input type="checkbox" name="del_post_n_{{ loop.index }}" value="{{ loop.index0 + offset }}">
+                        <input type="checkbox" name="del_post_n_{{ loop.index }}" value="{{ post['postId'] }}">
                         <span class="checkmark_todel"></span>
                     </label>
                 </div>
                 <div class="content">
                     <video width="220" height="360" controls="">
+                        {% if post['local_filename'] %}
                             <source src="{{ url_for('static', filename=post['videoUrl']) }}" type="video/mp4">
+                        {% else %}
+                            <source src="{{ post['videoUrl'] }}" type="video/mp4">
+                        {% endif %}
                     </video>
                 </div>
                 <div class="sidebar_right">
                     <div style="margin-top:10px">
                         <label class="container">
-                            <input type="checkbox" name="post_n_{{ loop.index }}" value="{{ loop.index0 + offset }}">
+                            <input type="checkbox" name="post_n_{{ loop.index }}" value="{{ post['postId'] }}">
                             <span class="checkmark_promote"></span>
                         </label>
                     </div>
                 </div>
                 <div class="footer">
-                    <span style="display:block;text-align:center;padding-top:12px;color: #5d5d5d;font-size: small;">
-                        <b>{{ post['local_filename'] }}</b>
-                    </span>
+                    {% if post['local_filename'] %}
+                        <span style="display:block;text-align:center;padding-top:12px;color: #5d5d5d;font-size: small;">
+                            <b>{{ post['local_filename'] }}</b>
+                        </span>
+                    {% else %}
+                        <span style="display:block;text-align:center;padding-top:12px;color: #5d5d5d;font-size: small;">
+                            <b>{{ post['posterUid'] }}</b>
+                        </span>
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}
@@ -79,7 +89,7 @@
                     {% if offset != info['last_ref_offset'] %}
                         {% if offset != info['current_offset'] %}
                             <a style="margin-right: 2px; padding:12px 8px;" class="fancy-button"
-                                href="{{ url_for('promote', uid=info['uid'], srcl=info['srcl'], offset=offset) }}">
+                                href="{{ url_for('promote', uid=info['uid'], srcl=info['src_list'], offset=offset) }}">
                                 <span style="color:darkslategrey">
                                     <b>{{ offset }}</b>
                                 </span>
@@ -94,7 +104,7 @@
                 {% endfor %}
                 <span style="float:right">
                     <a style="margin-left: 15px; padding:12px 8px;" class="fancy-button-red"
-                        href="{{ url_for('promote', uid=info['uid'], srcl=info['srcl'], offset=info['last_ref_offset']) }}">
+                        href="{{ url_for('promote', uid=info['uid'], srcl=info['src_list'], offset=info['last_ref_offset']) }}">
                         <b>{{ info['last_ref_offset'] }}</b>
                     </a>
                 </span>
@@ -133,12 +143,12 @@
 
         <div style="margin-top:10px;text-align:center">
             <span style="width:100%">
-                    <input class="enjoy-css" type="submit" name="back" value="<<">
-                    <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>
-                    <input class="enjoy-css" name="submit_next" type="submit" value="Submit>">
-                    <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>
-                    <input class="enjoy-css" name="next" type="submit" value=">>">
-                    <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>
+                <input class="enjoy-css" type="submit" name="back" value="<<">
+                <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>
+                <input class="enjoy-css" name="submit_next" type="submit" value="Submit>">
+                <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>
+                <input class="enjoy-css" name="next" type="submit" value=">>">
+                <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>
             </span>
         </div>
     </form>
