@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request, url_for, redirect
 import config as cfg
 import promotion
 import pond_json as pj
@@ -23,10 +23,18 @@ def promote(uid):
         request_data = request.args
 
     pond_obj = pj.PondJSON(uid)
-    request_handler_obj = promotion.RequestHadler(request_data, pond_obj)
-    request_handler_obj.handle()
-    page = promotion.PageData(pond_obj, request_handler_obj)
+    request_handler = promotion.PromoteRequestHandler(request_data, pond_obj)
+    request_handler.handle()
+    page = promotion.PageData(pond_obj, request_handler)
     return render_template('promote.html', page=page)
+
+@app.route('/commit/<string:uid>')
+def commit(uid):
+    pond_obj = pj.PondJSON(uid)
+    request_handler_obj = promotion.CommitRequestHandler(request.args, pond_obj)
+    request_handler_obj.handle()
+    return redirect(url_for('promote', uid=uid, srcl=request.form.get('srcl')))
+
 
 
 if __name__ == '__main__':

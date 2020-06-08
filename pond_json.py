@@ -10,7 +10,8 @@ class PondJSON:
         self.pond_fname = cfg.get_json_pond_file(self.uid)
         self.pond = {}
         self.load()
-        self.posts = self.pond['posts']
+        self.posts = {}
+        self.fill_posts()
         self.checklists = {}
         self.create_checklists()
         self.page_params = {}
@@ -21,12 +22,23 @@ class PondJSON:
                     self.pond = json.load(fp)
 
     def dump(self):
-        self.pond['posts'] = self.posts
+        self.pond['posts'].update(self.posts)
         for l in self.checklists:
-            self.pond[l] = self.checklists[l].get_data()
+            lst = self.get_list(l)
+            all_data = lst.get_data()
+            commited_posts = lst.get_current_commited_posts()
+            self.pond[l] = list(set(all_data) - set(commited_posts))
 
         with open(self.pond_fname, 'w+') as fp:
             json.dump(self.pond, fp)
+
+
+    def fill_posts(self):
+        for key in self.pond['posts']:
+            post = self.pond['posts'][key]
+            if ('checked' not in post) or (cfg.STATE_COMMITED not in post['checked'].values()):
+                self.posts[key] = post
+
 
     def create_checklists(self):
         for list_cfg in cfg.check_lists:
@@ -63,3 +75,18 @@ class PondJSON:
             posts.append(self.posts[pid])
 
         return posts
+
+    def commit(self, list_type=None):
+        lst = self.get_list(list_type)
+        lst.commit_posts()
+        commited_posts = lst.get_current_commited_posts()
+        lst.exclude_posts(commited_posts)
+        self.get_list().exclude_posts(commited_posts)
+        self.dump()
+        local_files = []
+        for p in commited_posts:
+            if 'local_filename' in self.posts[p]:
+                local_files.append(self.posts[p]['local_filename'])
+
+        if len(local_files) > 0:
+            cfg.commit_local_files(self.uid, lst.type, local_files)

@@ -1,5 +1,7 @@
-import re
 import os
+import datetime
+import shutil
+import re
 import json
 from glob import glob
 
@@ -13,29 +15,13 @@ video_exts = ['.mp4', '.webm']
 
 check_lists = [
     { 'type': 'overall' },
-    { 'type': 'promo' },
-    { 'type': 'todel' }
+    { 'type': 'promo', 'commit_dir_prefix': 'promoted_' },
+    { 'type': 'todel', 'commit_dir_prefix': 'deleted_' }
 ]
 
-
-def is_file_with_urls(filename):
-    template_url_file = re.compile('[a-zA-Z0-9_]+'+list_file_ext)
-    return template_url_file.match(filename)
-
-
-def is_file_with_json_data(filename):
-    template_url_file = re.compile('[a-zA-Z0-9_]+'+json_file_ext)
-    return template_url_file.match(filename)
-
-
-def get_uid_from_dir(directory_path):
-    uid = None
-    for fname in os.listdir(directory_path):
-        if is_file_with_json_data(fname) or is_file_with_urls(fname):
-            uid = os.path.splitext(fname)[0]
-            break
-    return uid
-
+STATE_CHECKED = 1
+STATE_UNCHECKED = 2
+STATE_COMMITED = 3
 
 def is_uid_dir(uid, d):
     template_uid_dir = re.compile('^'+uid+'[^0-9].*')
@@ -85,10 +71,6 @@ def ask_confirm(prompt=None, resp=False):
             return False
 
 
-def get_ponds_db():
-    return os.path.join(wip_path, 'ponds_db.json')
-
-
 def update_ponds_db(pond_uid, info_data):
     db_json_fname = get_ponds_db()
     with open(db_json_fname, 'r') as fp:
@@ -111,3 +93,29 @@ def get_ponds(pond_type):
 
     sort_ponds = sorted(ponds, key=lambda i: i['overall_count'])
     return sort_ponds
+
+
+def get_ponds_db():
+    return os.path.join(wip_path, 'ponds_db.json')
+
+def commit_local_files(pond_uid, list_type, local_files):
+    today = datetime.date.today()
+    hour = datetime.datetime.today().hour
+    if hour%2:
+        hour -= 1
+    
+    for cfg in check_lists:
+        if cfg['type'] == list_type:
+            prefix = cfg.get('commit_dir_prefix', '')
+            break
+
+    commit_dir_name = f'{prefix}{today}H{hour}'
+    pond_dir = get_pond_dir(pond_uid)
+    commit_dir_path = os.path.join(pond_dir, commit_dir_name)
+
+    if not os.path.exists(commit_dir_path):
+        os.mkdir(commit_dir_path)
+
+    for fname in local_files:
+        fpath = os.path.join(pond_dir, fname)
+        shutil.move(fpath, commit_dir_path)

@@ -65,12 +65,12 @@
         </a>
     {% endif %}
         <span style="float:right">
-            <a class="fancy-button-red" href="{{ url_for('promote', uid=info['uid'], srcl='todel', need_checkout=1) }}">
+            <a onclick="return confirm_click()" class="fancy-button-red" href="{{ url_for('commit', uid=info['uid'], srcl='todel') }}">
                 <span><b>delete</b></span>
             </a>
         </span>
         <span style="float:right">
-            <a class="fancy-button-green" href="{{ url_for('promote', uid=info['uid'], srcl='promo', need_checkout=1) }}">
+            <a onclick="return confirm_click()" class="fancy-button-green" href="{{ url_for('commit', uid=info['uid'], srcl='promo') }}">
                 <span><b>promote</b></span>
             </a>
         </span>
@@ -120,6 +120,12 @@
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/common.css')}}"/>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/post_cell.css')}}"/>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/buttons.css')}}"/>
+        <script type="text/javascript">
+            function confirm_click()
+            {
+                return confirm("Confirm action");
+            }
+        </script>
     </head>
 
 <body style="font-family:'Roboto',Verdana,Geneva,sans-serif; background-color:#cbe0ff;">

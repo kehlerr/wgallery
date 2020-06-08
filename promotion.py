@@ -4,10 +4,23 @@ import config as cfg
 class RequestHadler:
     def __init__(self, request_form, pond):
         self.request_data = {}
-        self.page_params = {}
         self.fill_request_data(request_form)
         self.pond = pond
+        self.page_params = {}
 
+    def fill_request_data(self, request_form):
+        pass
+    
+    def handle(self):
+        pass
+
+    def set_page_params(self):
+        pass
+
+    def get_page_params(self):
+        return self.page_params
+
+class PromoteRequestHandler(RequestHadler):
     def fill_request_data(self, request_form):
         self.request_data['val_back'] = request_form.get('back', default=None)
         self.request_data['val_next'] = request_form.get('next', default=None)
@@ -63,7 +76,6 @@ class RequestHadler:
 
     def process_checked(self, l_type):
         checked_data = self.request_data.get(l_type)
-        print(f'checked post: {l_type}')
         for postId in checked_data:
             self.pond.check_post(postId, l_type)
 
@@ -81,18 +93,15 @@ class RequestHadler:
             'src_list': src_list
         }
 
-    def get_page_params(self):
-        return self.page_params
 
-    # def update_pond_info(self):
-    #     if not self.pond.get('info'):
-    #         self.pond['info'] = {}
+class CommitRequestHandler(RequestHadler):
+    def fill_request_data(self, request_form):
+        self.request_data['src_list'] = request_form.get('srcl', 'overall')
 
-    #     self.pond['info']['promo_count'] = self.get_checked_count('promo')
-    #     self.pond['info']['todel_count'] = self.get_checked_count('todel')
-    #     last_offset = self.pond['info'].get('last_offset') or 0
-    #     if self.offset > last_offset:
-    #         self.json_pond['info']['last_offset'] = last_offset
+    def handle(self):
+        lst = self.request_data['src_list']
+        self.pond.commit(lst)
+
 
 
 class PageData:
