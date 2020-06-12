@@ -24,7 +24,11 @@
     <div class="grid-container">
         {% for p in ponds %}
             <div class="grid-item">
+            {% if 'last_post' in p %}
+                <a href="{{ url_for('promote', uid=p['uid'], lastpid=p['last_post']) }}">
+            {% else %}
                 <a href="{{ url_for('promote', uid=p['uid']) }}">
+            {% endif %}
                     <div style="background-color:#b9ffdb;font-size:26;margin-bottom: 5px;margin-right: 7;border-radius: 7px;padding: 5px;padding-left: 10px;">
                         {{ p['uid'] }}
                     </div>

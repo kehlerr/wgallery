@@ -76,13 +76,13 @@ def update_ponds_db(pond_uid, info_data):
     with open(db_json_fname, 'r') as fp:
         db_json = json.load(fp)
 
-    db_json['ponds'][pond_uid] = info_data
+    db_json['ponds'][pond_uid].update(info_data)
 
     with open(db_json_fname, 'w+') as fp:
         json.dump(db_json, fp, separators=(',', ':'))
 
 
-def get_ponds(pond_type):
+def get_ponds(pond_type=None):
     ponds = []
     with open(get_ponds_db(), 'r') as fp:
         db_json = json.load(fp)
@@ -93,6 +93,11 @@ def get_ponds(pond_type):
 
     sort_ponds = sorted(ponds, key=lambda i: i['overall_count'])
     return sort_ponds
+
+def get_pond_info_from_db(uid):
+    with open(get_ponds_db(), 'r') as fp:
+        db_json = json.load(fp)
+        return db_json['ponds'][uid]
 
 
 def get_ponds_db():

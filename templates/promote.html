@@ -144,7 +144,7 @@
     {% endif %}
 
         <div class="grid-container">
-            {{ render_posts(page.get_posts(), pond_info['current_offset']) }}
+            {{ render_posts(pond_info.posts, pond_info['current_offset']) }}
         </div>
 
         <div style="margin-top:10px;text-align:center">

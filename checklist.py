@@ -9,7 +9,6 @@ class CheckList:
         self.commited_posts = []
         self.migrate()
 
-
     def migrate(self):
         pass
 
@@ -59,13 +58,6 @@ class CheckList:
             return checked_in_list or 0
         return 0
 
-    def get_post_by_number(self, n):
-        number_in_list = 0 <= n <= len(self)
-        if number_in_list:
-            postId = self.postids[n]
-            if postId:
-                    return self.posts[postId]
-
     def commit_posts(self):
         pass
 
@@ -84,7 +76,6 @@ class CheckSubList(CheckList):
             else:
                 if 'checked' not in self.posts[pid]:
                         self.posts[pid]['checked'] = { self.type: cfg.STATE_CHECKED }
-
 
     def checkout(self):
         new_checked_posts = []

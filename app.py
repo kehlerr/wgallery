@@ -26,6 +26,7 @@ def promote(uid):
     request_handler = promotion.PromoteRequestHandler(request_data, pond_obj)
     request_handler.handle()
     page = promotion.PageData(pond_obj, request_handler)
+    page.update_pond_in_db()
     return render_template('promote.html', page=page)
 
 @app.route('/commit/<string:uid>')

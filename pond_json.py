@@ -20,6 +20,12 @@ class PondJSON:
         if os.path.exists(self.pond_fname):
             with open(self.pond_fname, 'r') as fp:
                     self.pond = json.load(fp)
+                    self.sort()
+
+    def sort(self):
+        sort_key ='postId'
+        self.pond['overall'] = sorted(self.pond['overall'],
+            key=lambda v: self.pond['posts'][v][sort_key])
 
     def dump(self):
         self.pond['posts'].update(self.posts)
@@ -32,13 +38,11 @@ class PondJSON:
         with open(self.pond_fname, 'w+') as fp:
             json.dump(self.pond, fp)
 
-
     def fill_posts(self):
         for key in self.pond['posts']:
             post = self.pond['posts'][key]
             if ('checked' not in post) or (cfg.STATE_COMMITED not in post['checked'].values()):
                 self.posts[key] = post
-
 
     def create_checklists(self):
         for list_cfg in cfg.check_lists:

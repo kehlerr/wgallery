@@ -33,7 +33,7 @@ class PromoteRequestHandler(RequestHadler):
         self.request_data['prev_offset'] = prev_offset
 
         self.request_data['src_list'] = request_form.get('srcl', 'overall')
-
+        self.request_data['last_postid'] = request_form.get('lastpid', '')
         self.request_data['need_checkout'] = request_form.get('need_checkout')
         self.request_data['promo'] = []
         self.request_data['todel'] = []
@@ -81,17 +81,31 @@ class PromoteRequestHandler(RequestHadler):
 
     def set_page_params(self):
         src_list = self.request_data['src_list']
-        lst = self.pond.get_list(src_list)
-        posts_count = len(lst)
-        offset = self.request_data['offset']
-        if offset > posts_count or offset < 0:
-            offset = self.request_data['prev_offset']
+        self.lst = self.pond.get_list(src_list)
+        posts_count = len(self.lst)
+        if len(self.request_data['last_postid']):
+            self.last_postid = self.request_data['last_postid']
+            offset = self.get_offset_by_postid()
+        else:
+            offset = self.request_data['offset']
+            if offset > posts_count or offset < 0:
+                offset = self.request_data['prev_offset']
 
         self.page_params = {
             'offset': offset,
             'posts_count': posts_count,
             'src_list': src_list
         }
+
+    def get_offset_by_postid(self):
+        posts = self.lst.get_data()
+        if self.last_postid in posts:
+            idx = posts.index(self.last_postid)
+            offset = idx//cfg.posts_on_page * cfg.posts_on_page
+        else:
+            offset = 0
+        return offset
+
 
 
 class CommitRequestHandler(RequestHadler):
@@ -114,28 +128,65 @@ class PageData:
         self.total_posts_count = page_params['posts_count']
         posts_remaining_count = self.total_posts_count - self.offset
         self.posts_page_count = min(cfg.posts_on_page, posts_remaining_count)
+        self.calculate_refs()
+        self.page_posts = self.get_posts()
+        self.last_post = self.page_posts[-1]['postId']
+        self.db_info = cfg.get_pond_info_from_db(self.pond.uid)
 
     def get_posts(self):
         lst = self.pond.get_list(self.src_list)
         return lst.get_posts(self.offset, cfg.posts_on_page)
 
-    def get_pond_info(self):
+    def calculate_refs(self):
         current_page_idx = self.offset / cfg.posts_on_page + 1
-        left_idx = max(0, int(current_page_idx - cfg.max_refs_count / 2 + 1))
+        self.left_idx = max(0, int(current_page_idx - cfg.max_refs_count / 2 + 1))
         total_refs_count = self.total_posts_count//cfg.posts_on_page
-        current_offset_refs_count = total_refs_count + 1 - left_idx
-        refs_count = min(current_offset_refs_count, cfg.max_refs_count)
-        last_ref_offset = total_refs_count*cfg.posts_on_page
+        current_offset_refs_count = total_refs_count + 1 - self.left_idx
+        self.refs_count = min(current_offset_refs_count, cfg.max_refs_count)
+        self.last_ref_offset = total_refs_count*cfg.posts_on_page
 
+    def get_pond_info(self):
         return {
             'uid': self.pond.uid,
             'src_list': self.src_list,
-            'refs_count': refs_count,
-            'left_idx': int(left_idx),
+            'posts': self.page_posts,
+            'refs_count': self.refs_count,
+            'left_idx': self.left_idx,
             'current_offset': self.offset,
-            'last_ref_offset': last_ref_offset,
+            'last_ref_offset': self.last_ref_offset,
             'page_step': int(cfg.posts_on_page),
             'overall_count': self.pond.get_checked_count('overall'),
             'promo_count': self.pond.get_checked_count('promo'),
             'todel_count': self.pond.get_checked_count('todel')
         }
+
+    def update_pond_in_db(self):
+        self.define_last_post()
+        self.db_info['last_post'] = self.last_post
+
+        current_info = self.get_pond_info()
+        self.db_info['overall_count'] = current_info['overall_count']
+        self.db_info['promo_count'] = current_info['promo_count']
+        self.db_info['todel_count'] = current_info['todel_count']
+
+        cfg.update_ponds_db(self.pond.uid, self.db_info)
+
+    def define_last_post(self):
+        last_post = self.db_info.get('last_post', None)
+        if not last_post:
+            last_post = self.last_post
+        else:
+            lst = self.pond.get_list(self.src_list)
+            posts = lst.get_data()
+            if last_post in posts:
+                idx_stored = posts.index(last_post)
+                idx_current = posts.index(self.last_post)
+                if idx_current > idx_stored:
+                    last_post = self.last_post
+            else:
+                last_post = self.last_post
+        
+        self.last_post = last_post
+
+
+
