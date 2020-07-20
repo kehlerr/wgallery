@@ -12,7 +12,13 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 @app.route('/')
 def index():
     t = request.args.get('type', default=None, type=str)
-    return render_template('index.html', ponds=cfg.get_ponds(t))
+    if t:
+        cat = request.args.get('cat', default=None, type=str)
+        categories = cfg.get_categories_by_type(t)
+    else:
+        cat = None
+        categories = None
+    return render_template('index.html', ponds=cfg.get_ponds(t, cat), categories=categories, type=t)
 
 
 @app.route('/promote/<string:uid>', methods=['GET', 'POST'])
@@ -39,4 +45,4 @@ def commit(uid):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)

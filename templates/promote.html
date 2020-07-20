@@ -114,6 +114,19 @@
     </div>
 {% endmacro %}
 
+{% macro create_category_panel() %}
+    {% set categories = page.get_db_categories() %}
+    {% if categories %}
+        <div class="panel-row">
+        {% for c in categories %}
+            <input type="radio" id="{{c}}" name="cat" value="{{c}}">
+            <label for="{{c}}">{{c}}</label>
+        {% endfor %}
+        </div>
+    {% endif %}
+{% endmacro %}
+
+
 <html>
     <head>
         <title>Save videos!</title>
@@ -137,6 +150,7 @@
     </div>
     {% set pond_info = page.get_pond_info() %}
     {{ create_info_panel(pond_info) }}
+
     <form id="main" action="{{url_for('promote', uid=pond_info['uid'])}}" method="POST">
         <input type="hidden" name="offset" value="{{ pond_info['current_offset']}}">
     {% if pond_info['src_list'] | length > 0 and pond_info['src_list'] != 'overall' %}
@@ -146,6 +160,10 @@
         <div class="grid-container">
             {{ render_posts(pond_info.posts, pond_info['current_offset']) }}
         </div>
+
+        {% if not pond_info['category'] %}
+            {{ create_category_panel() }}
+        {% endif %}
 
         <div style="margin-top:10px;text-align:center">
             <span style="width:100%">

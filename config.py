@@ -82,14 +82,15 @@ def update_ponds_db(pond_uid, info_data):
         json.dump(db_json, fp, separators=(',', ':'))
 
 
-def get_ponds(pond_type=None):
+def get_ponds(pond_type=None, pond_category=None):
     ponds = []
     with open(get_ponds_db(), 'r') as fp:
         db_json = json.load(fp)
         for v in db_json['ponds']:
             pond = db_json['ponds'][v]
             if not pond_type or pond_type == pond['type']:
-                ponds.append(pond)
+                if not pond_category or pond_category == pond.get('category'):
+                    ponds.append(pond)
 
     sort_ponds = sorted(ponds, key=lambda i: i['overall_count'])
     return sort_ponds
@@ -98,6 +99,12 @@ def get_pond_info_from_db(uid):
     with open(get_ponds_db(), 'r') as fp:
         db_json = json.load(fp)
         return db_json['ponds'][uid]
+
+def get_categories_by_type(t):
+    with open(get_ponds_db(), 'r') as fp:
+        db_json = json.load(fp)
+        cfgs = db_json['configs']
+    return cfgs['categories_in_types'].get(t)
 
 
 def get_ponds_db():

@@ -1,3 +1,13 @@
+{% macro create_categories_panel(categories) %}
+<div class="panel-row">
+{% for c in categories %}
+    <a class="fancy-button" href="{{ url_for('index', type=type, cat=c) }}">
+        <span style="color: darkslategray;"><b>{{c}}</b></span>
+    </a>
+{% endfor %}
+</div>
+{% endmacro %}
+
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -21,6 +31,11 @@
             <span style="color:#73006a">Custom</span>
         </a>
     </div>
+
+    {% if categories %}
+        {{ create_categories_panel(categories) }}
+    {% endif %}
+
     <div class="grid-container">
         {% for p in ponds %}
             <div class="grid-item">

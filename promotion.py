@@ -47,6 +47,8 @@ class PromoteRequestHandler(RequestHadler):
                     if val:
                             self.request_data['todel'].append(val)
 
+        self.request_data['category'] = request_form.get('cat')
+
     def get_offset_change(self):
         offset_change = 0
         if self.request_data['val_submit_next']:
@@ -71,6 +73,8 @@ class PromoteRequestHandler(RequestHadler):
         if self.need_process_checked():
             self.process_checked('promo')
             self.process_checked('todel')
+        
+        self.check_and_process_category()
 
         self.pond.dump()
 
@@ -78,6 +82,13 @@ class PromoteRequestHandler(RequestHadler):
         checked_data = self.request_data.get(l_type)
         for postId in checked_data:
             self.pond.check_post(postId, l_type)
+
+    def check_and_process_category(self):
+        category = self.request_data.get('category')
+        if category:
+            db_info = cfg.get_pond_info_from_db(self.pond.uid)
+            db_info['category'] = category
+            cfg.update_ponds_db(self.pond.uid, db_info)
 
     def set_page_params(self):
         src_list = self.request_data['src_list']
@@ -139,11 +150,15 @@ class PageData:
 
     def calculate_refs(self):
         current_page_idx = self.offset / cfg.posts_on_page + 1
-        self.left_idx = max(0, int(current_page_idx - cfg.max_refs_count / 2 + 1))
+        left_idx = int(current_page_idx - cfg.max_refs_count / 2 + 1)
+        self.left_idx = max(0, left_idx)
         total_refs_count = self.total_posts_count//cfg.posts_on_page
         current_offset_refs_count = total_refs_count + 1 - self.left_idx
         self.refs_count = min(current_offset_refs_count, cfg.max_refs_count)
         self.last_ref_offset = total_refs_count*cfg.posts_on_page
+
+    def get_db_categories(self):
+        return cfg.get_categories_by_type(self.db_info['type'])
 
     def get_pond_info(self):
         return {
@@ -157,7 +172,9 @@ class PageData:
             'page_step': int(cfg.posts_on_page),
             'overall_count': self.pond.get_checked_count('overall'),
             'promo_count': self.pond.get_checked_count('promo'),
-            'todel_count': self.pond.get_checked_count('todel')
+            'todel_count': self.pond.get_checked_count('todel'),
+            'type': self.db_info['type'],
+            'category': self.db_info.get('category')
         }
 
     def update_pond_in_db(self):

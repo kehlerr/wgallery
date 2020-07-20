@@ -38,10 +38,14 @@ if __name__ == "__main__":
         prev_type = prev_data['info']['type']
         prev_promo = prev_data['promo']
         prev_todel = prev_data['todel']
+        prev_category = prev_data['info'].get('category')
+
     t = input(f'Enter type of pond [{prev_type}]') or prev_type
     if not t or len(t) <= 0:
         print('none type of pond! try later...')
         exit(-1)
+
+    category = input(f'Enter category of pond [{prev_category}]') or prev_category
 
     json_data = {
         'posts': {},
@@ -50,6 +54,9 @@ if __name__ == "__main__":
         'todel': prev_todel or [],
         'type': t
     }
+
+    if category and len(category):
+        json_data['category'] = category
 
     for fname in files_list:
         if cfg.is_video(fname):
