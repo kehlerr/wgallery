@@ -15,12 +15,31 @@ body {
 }
 
 .grid-container {
-         display: grid;
-         grid-template-columns: auto auto auto;
-         background-color: #c6b4fd;
-         padding: 10px;
-         width: 98%;
-         border-radius:10px
+        display: grid;
+        grid-template-columns: auto auto auto;
+        background-color: #c6b4fd;
+        padding: 10px;
+        width: 98%;
+        border-radius:10px;
+        margin-bottom: 7px;
+}
+
+.panel-row-new {
+    background-color:#73cc86;
+    font-size: larger;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-radius:10px;
+    padding: 10px;
+    width:98%;
+}
+
+.grid-container-new {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    padding-top: 10px;
+    width: 98%;
+    border-radius:10px
 }
 
 .grid-item {

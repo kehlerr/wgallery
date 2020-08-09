@@ -1,0 +1,132 @@
+{% macro create_categories_panel(categories) %}
+<div class="panel-row">
+{% for c in categories %}
+    <a class="fancy-button" href="{{ url_for('index', type=type, cat=c) }}">
+        <span style="color: darkslategray;"><b>{{c}}</b></span>
+    </a>
+{% endfor %}
+</div>
+{% endmacro %}
+
+{% macro create_types_panel(types) %}
+<div class="panel-row">
+    <a class="fancy-button" href="{{ url_for('index') }}">
+        <span style="color: #4c32b1;"><b>Overall</b></span>
+    </a>
+{% for t in types %}
+    <a class="fancy-button" href="{{ url_for('index', type=t) }}">
+        <span style="color: darkslategray;"><b>{{t}}</b></span>
+    </a>
+{% endfor %}
+</div>
+{% endmacro %}
+
+
+{% macro fill_table_ponds(data, label=None) %}
+{% if label %}
+<a class="fancy-button" style="background:#50ea71">
+    <span style="color: #a20f5a;"><b>{{label}}</b></span>
+</a>
+{% endif %}
+<div class="grid-container">
+
+    {% for p in data %}
+        {% set uid=p['uid'] %}
+        {% set type_=p['pond_type'].name_id %}
+        {% set category=p['pond_category'].name_id %}
+        <div class="grid-item">
+        {% if p.last_post %}
+            <a href="{{ url_for('promote', uid=uid, lastpid=p['last_post']) }}">
+        {% else %}
+        {% endif %}
+
+            <div style="background-color:#b9ffdb;font-size:26;margin-bottom: 5px;margin-right: 7;border-radius: 7px;padding: 5px;padding-left: 10px;">
+                <a href="{{ url_for('promote', uid=uid) }}">{{ uid }} </a>
+                <span style="float: right">
+                    <a class="edit-pond-button" onclick="show_modal('{{uid}}','{{type_}}','{{category}}')">
+                        <img src="{{url_for('static', filename='img/icon_edit.svg')}}" width="28px" height="28px" viewbox="0 0 32 32">
+                    </a>
+                </span>
+            </div>
+
+            <div>
+                <a style="text-decoration-color:darkslategrey" href="{{ url_for('promote', uid=p['uid']) }}">
+                <b><span style="color:darkslategrey">{{ p['overall_count'] }}</span></a></b>
+
+                {% if p['promo_count'] > 0 %}
+                    <a style="text-decoration-color:green" href="{{ url_for('promote', uid=p['uid'], srcl='promo') }}">
+                    <span style="color:green">/<b>{{ p['promo_count'] }}</b></span></a>
+                {% endif %}
+                {% if p['todel_count'] > 0 %}
+                    <a style="text-decoration-color:#e01632" href="{{ url_for('promote', uid=p['uid'], srcl='todel') }}">
+                    <span style="color:#e01632">/<b>{{ p['todel_count'] }}</b></span></a>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endmacro %}
+
+{% macro create_new_ponds_panel(data) %}
+<div class="panel-row-new">
+    <a class="fancy-button" style="background:#50ea71">
+        <span style="color: #a20f5a;"><b>New catalogs</b></span>
+    </a>
+    <div class="grid-container-new">
+        {% for uid in data %}
+        <div class="grid-item">
+            <span>{{ uid }}</span>
+            <span style="float: right; vertical-align: middle">
+                <a class="fancy-button" style="background:#50ea71" onclick="show_modal('{{uid}}')">
+                    <span style="color: #a20f5a;">+</span>
+                </a>
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endmacro %}
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Welcome, master</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/common.css')}}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/buttons.css')}}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/micromodal.css')}}"/>
+    <script src="{{ url_for('static', filename='js/micromodal.js')}}"></script>
+</head>
+
+<body>
+    {% include "edit_folder_modal.html" %}
+
+    {% if new_ponds %}
+        {{ create_new_ponds_panel(new_ponds) }}
+    {% endif %}
+
+    {{ create_types_panel(types) }}
+
+    {% if categories %}
+        {{ create_categories_panel(categories) }}
+    {% endif %}
+
+    {% if last_seen_ponds %}
+        <div class="panel-row-new">
+            <a class="fancy-button" style="background:linear-gradient(180deg, rgba(115,204,134,1) 0%, rgba(198,180,253,1) 80%);margin-bottom: 5px">
+                <span style="color: #a20f5a;"><b>Last seen</b></span>
+            </a>
+            {{ fill_table_ponds(last_seen_ponds)}}
+        </div>
+    {% endif %}
+
+    {{ fill_table_ponds(ponds) }}
+
+    <script type="text/javascript">
+        MicroModal.init({
+            disableFocus: true,
+            disableScroll: true,
+        });
+    </script>
+
+</body>
+</html>

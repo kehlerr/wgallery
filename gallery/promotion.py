@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from gallery import db, models
 import config as cfg
 
 
@@ -10,7 +13,7 @@ class RequestHadler:
 
     def fill_request_data(self, request_form):
         pass
-    
+
     def handle(self):
         pass
 
@@ -19,6 +22,7 @@ class RequestHadler:
 
     def get_page_params(self):
         return self.page_params
+
 
 class PromoteRequestHandler(RequestHadler):
     def fill_request_data(self, request_form):
@@ -73,7 +77,7 @@ class PromoteRequestHandler(RequestHadler):
         if self.need_process_checked():
             self.process_checked('promo')
             self.process_checked('todel')
-        
+
         self.check_and_process_category()
 
         self.pond.dump()
@@ -86,9 +90,9 @@ class PromoteRequestHandler(RequestHadler):
     def check_and_process_category(self):
         category = self.request_data.get('category')
         if category:
-            db_info = cfg.get_pond_info_from_db(self.pond.uid)
-            db_info['category'] = category
-            cfg.update_ponds_db(self.pond.uid, db_info)
+            db_entry = models.get_pond_entry(self.pond.uid)
+            db_entry.category = category
+            db.session.commit()
 
     def set_page_params(self):
         src_list = self.request_data['src_list']
@@ -118,7 +122,6 @@ class PromoteRequestHandler(RequestHadler):
         return offset
 
 
-
 class CommitRequestHandler(RequestHadler):
     def fill_request_data(self, request_form):
         self.request_data['src_list'] = request_form.get('srcl', 'overall')
@@ -126,7 +129,6 @@ class CommitRequestHandler(RequestHadler):
     def handle(self):
         lst = self.request_data['src_list']
         self.pond.commit(lst)
-
 
 
 class PageData:
@@ -142,7 +144,7 @@ class PageData:
         self.calculate_refs()
         self.page_posts = self.get_posts()
         self.last_post = self.page_posts[-1]['postId']
-        self.db_info = cfg.get_pond_info_from_db(self.pond.uid)
+        self.db_entry = models.get_pond_entry(self.pond.uid)
 
     def get_posts(self):
         lst = self.pond.get_list(self.src_list)
@@ -158,7 +160,7 @@ class PageData:
         self.last_ref_offset = total_refs_count*cfg.posts_on_page
 
     def get_db_categories(self):
-        return cfg.get_categories_by_type(self.db_info['type'])
+        return models.get_categories_by_type(id_=self.db_entry.type)
 
     def get_pond_info(self):
         return {
@@ -173,23 +175,24 @@ class PageData:
             'overall_count': self.pond.get_checked_count('overall'),
             'promo_count': self.pond.get_checked_count('promo'),
             'todel_count': self.pond.get_checked_count('todel'),
-            'type': self.db_info['type'],
-            'category': self.db_info.get('category')
+            'type': self.db_entry.type,
+            'category': self.db_entry.category
         }
 
     def update_pond_in_db(self):
         self.define_last_post()
-        self.db_info['last_post'] = self.last_post
+        self.db_entry.last_post = self.last_post
 
         current_info = self.get_pond_info()
-        self.db_info['overall_count'] = current_info['overall_count']
-        self.db_info['promo_count'] = current_info['promo_count']
-        self.db_info['todel_count'] = current_info['todel_count']
+        self.db_entry.overall_count = current_info['overall_count']
+        self.db_entry.promo_count = current_info['promo_count']
+        self.db_entry.todel_count = current_info['todel_count']
+        self.db_entry.last_seen_at = datetime.utcnow()
 
-        cfg.update_ponds_db(self.pond.uid, self.db_info)
+        db.session.commit()
 
     def define_last_post(self):
-        last_post = self.db_info.get('last_post', None)
+        last_post = self.db_entry.last_post
         if not last_post:
             last_post = self.last_post
         else:
@@ -202,8 +205,5 @@ class PageData:
                     last_post = self.last_post
             else:
                 last_post = self.last_post
-        
+
         self.last_post = last_post
-
-
-

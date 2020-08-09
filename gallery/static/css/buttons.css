@@ -92,3 +92,7 @@
 .fancy-button-green:focus, .fancy-button-green:hover {
     background: #008a37;
 }
+
+a.edit-pond-button {
+    cursor: pointer;
+}

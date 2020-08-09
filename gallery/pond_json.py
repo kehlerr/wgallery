@@ -23,9 +23,13 @@ class PondJSON:
                     self.sort()
 
     def sort(self):
-        sort_key ='postId'
-        self.pond['overall'] = sorted(self.pond['overall'],
-            key=lambda v: self.pond['posts'][v][sort_key])
+        sort_key = 'mod_time'
+        self.pond['overall'] = sorted(
+            self.pond['overall'],
+            key=lambda v:
+            self.pond['posts'][v].get(sort_key) or
+            self.pond['posts'][v]['postId']
+        )
 
     def dump(self):
         self.pond['posts'].update(self.posts)
@@ -41,7 +45,8 @@ class PondJSON:
     def fill_posts(self):
         for key in self.pond['posts']:
             post = self.pond['posts'][key]
-            if ('checked' not in post) or (cfg.STATE_COMMITED not in post['checked'].values()):
+            if (('checked' not in post) or
+                    (cfg.STATE_COMMITED not in post['checked'].values())):
                 self.posts[key] = post
 
     def create_checklists(self):

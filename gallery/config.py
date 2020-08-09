@@ -14,14 +14,15 @@ posts_on_page = 15
 video_exts = ['.mp4', '.webm']
 
 check_lists = [
-    { 'type': 'overall' },
-    { 'type': 'promo', 'commit_dir_prefix': 'promoted_' },
-    { 'type': 'todel', 'commit_dir_prefix': 'deleted_' }
+    {'type': 'overall'},
+    {'type': 'promo', 'commit_dir_prefix': 'promoted_'},
+    {'type': 'todel', 'commit_dir_prefix': 'deleted_'}
 ]
 
 STATE_CHECKED = 1
 STATE_UNCHECKED = 2
 STATE_COMMITED = 3
+
 
 def is_uid_dir(uid, d):
     template_uid_dir = re.compile('^'+uid+'[^0-9].*')
@@ -34,9 +35,13 @@ def get_pond_dir(int_id):
     if os.path.isdir(dir_path):
         return dir_path
     else:
-        for dirname in glob(os.path.join(wip_path, '*', '')):
+        for dirname in get_folders_list():
             if is_uid_dir(uid, dirname):
                 return dirname
+
+
+def get_folders_list():
+    return glob(os.path.join(wip_path, '*', ''))
 
 
 def get_json_pond_file(uid):
@@ -71,51 +76,12 @@ def ask_confirm(prompt=None, resp=False):
             return False
 
 
-def update_ponds_db(pond_uid, info_data):
-    db_json_fname = get_ponds_db()
-    with open(db_json_fname, 'r') as fp:
-        db_json = json.load(fp)
-
-    db_json['ponds'][pond_uid].update(info_data)
-
-    with open(db_json_fname, 'w+') as fp:
-        json.dump(db_json, fp, separators=(',', ':'))
-
-
-def get_ponds(pond_type=None, pond_category=None):
-    ponds = []
-    with open(get_ponds_db(), 'r') as fp:
-        db_json = json.load(fp)
-        for v in db_json['ponds']:
-            pond = db_json['ponds'][v]
-            if not pond_type or pond_type == pond['type']:
-                if not pond_category or pond_category == pond.get('category'):
-                    ponds.append(pond)
-
-    sort_ponds = sorted(ponds, key=lambda i: i['overall_count'])
-    return sort_ponds
-
-def get_pond_info_from_db(uid):
-    with open(get_ponds_db(), 'r') as fp:
-        db_json = json.load(fp)
-        return db_json['ponds'][uid]
-
-def get_categories_by_type(t):
-    with open(get_ponds_db(), 'r') as fp:
-        db_json = json.load(fp)
-        cfgs = db_json['configs']
-    return cfgs['categories_in_types'].get(t)
-
-
-def get_ponds_db():
-    return os.path.join(wip_path, 'ponds_db.json')
-
 def commit_local_files(pond_uid, list_type, local_files):
     today = datetime.date.today()
     hour = datetime.datetime.today().hour
-    if hour%2:
+    if hour % 2:
         hour -= 1
-    
+
     for cfg in check_lists:
         if cfg['type'] == list_type:
             prefix = cfg.get('commit_dir_prefix', '')

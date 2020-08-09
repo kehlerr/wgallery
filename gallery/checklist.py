@@ -71,11 +71,13 @@ class CheckList:
 class CheckSubList(CheckList):
     def migrate(self):
         for pid in self.postids:
-            if not pid in self.posts:
+            if pid not in self.posts:
                 self.commited_posts.append(pid)
             else:
                 if 'checked' not in self.posts[pid]:
-                        self.posts[pid]['checked'] = { self.type: cfg.STATE_CHECKED }
+                    self.posts[pid]['checked'] = {
+                        self.type: cfg.STATE_CHECKED
+                    }
 
     def checkout(self):
         new_checked_posts = []
