@@ -5,6 +5,9 @@ import config as cfg
 
 
 class RequestHadler:
+    '''
+        Base class for handling requests
+    '''
     def __init__(self, request_form, catalog):
         self.request_data = {}
         self.fill_request_data(request_form)
@@ -12,6 +15,9 @@ class RequestHadler:
         self.page_params = {}
 
     def fill_request_data(self, request_form):
+        '''
+            Parse arguments from form
+        '''
         pass
 
     def handle(self):
@@ -25,6 +31,9 @@ class RequestHadler:
 
 
 class PromoteRequestHandler(RequestHadler):
+    '''
+        Handle submitting groups of checked posts from page
+    '''
     def fill_request_data(self, request_form):
         self.request_data['val_back'] = request_form.get('back', default=None)
         self.request_data['val_next'] = request_form.get('next', default=None)
@@ -54,6 +63,9 @@ class PromoteRequestHandler(RequestHadler):
         self.request_data['category'] = request_form.get('cat')
 
     def get_offset_change(self):
+        '''
+            Define direction of page moving
+        '''
         offset_change = 0
         if self.request_data['val_submit_next']:
             offset_change = 1
@@ -88,6 +100,9 @@ class PromoteRequestHandler(RequestHadler):
             self.catalog.check_post(postId, l_type)
 
     def check_and_process_category(self):
+        '''
+            Update catalog category if set category argument
+        '''
         category = self.request_data.get('category')
         if category:
             db_entry = models.get_catalog_entry(self.catalog.uid)
@@ -123,6 +138,9 @@ class PromoteRequestHandler(RequestHadler):
 
 
 class CommitRequestHandler(RequestHadler):
+    '''
+        Committing all checked posts to promote or to delete
+    '''
     def fill_request_data(self, request_form):
         self.request_data['src_list'] = request_form.get('srcl', 'overall')
 
@@ -132,9 +150,11 @@ class CommitRequestHandler(RequestHadler):
 
 
 class PageData:
+    '''
+        Class for getting data about posts on specific page
+    '''
     def __init__(self, catalog, request_handler):
         self.catalog = catalog
-
         page_params = request_handler.get_page_params()
         self.offset = page_params['offset']
         self.src_list = page_params['src_list']

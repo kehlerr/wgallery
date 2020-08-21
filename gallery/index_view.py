@@ -48,7 +48,7 @@ class IndexView(views.MethodView):
         catalog_id = form.get('catalog_id')
         updated_type = form.get('new_type_name') or form.get('catalog_type')
         updated_category = (form.get('new_category_name') or
-                            form.get('catalog_category'))
+                            form.get('catalog_category', ''))
         update_catalog(catalog_id, updated_type, updated_category)
         return redirect(url_for('index'))
 

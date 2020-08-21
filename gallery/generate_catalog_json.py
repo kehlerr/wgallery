@@ -1,4 +1,4 @@
-#!/usr/bin/python3.8
+#!/usr/bin/env python3.8
 import os
 import sys
 import shutil
@@ -9,6 +9,9 @@ from gallery import models
 
 
 def update_catalog(dir_name, new_type=None, new_category=None):
+    '''
+        Update info about catalog in database
+    '''
     dir_path = os.path.join(cfg.wip_path, dir_name)
     if not os.path.exists(dir_path) or not os.path.isdir(dir_path):
         print('wrong directory!!!')
@@ -47,7 +50,8 @@ def update_catalog(dir_name, new_type=None, new_category=None):
     category = None
     if new_category:
         category = new_category
-    else:
+    elif new_category is None:
+        print(f'new category is:{new_category}')
         category = input(f'Enter category of catalog [{prev_category}]')
 
     if not category:
@@ -65,7 +69,7 @@ def update_catalog(dir_name, new_type=None, new_category=None):
     if category:
         json_data['category'] = category
 
-    try_fill_with_local_files(json_data)
+    fill_local_files(json_data)
 
     with open(dir_name + '.json', 'w+') as fp:
         json.dump(json_data, fp)
@@ -75,16 +79,14 @@ def update_catalog(dir_name, new_type=None, new_category=None):
     models.update_catalog_in_db(dir_name, json_data)
 
 
-def try_fill_with_local_files(json_data):
-    filled_local = False
+def fill_local_files(json_data):
+    '''
+        Fill json data with local files
+    '''
     files_list = sorted(
         filter(os.path.isfile, os.listdir('.')), key=os.path.getmtime)
     for fname in files_list:
         if cfg.is_video(fname):
-            if not have_any_local_file:
-                filled_local = True
-                json_data['posts'] = {}
-                json_data['overall'] = []
             data = {
                 'videoUrl': os.path.join(cfg.url_path, dir_name, fname),
                 'local_filename': fname,
@@ -93,8 +95,6 @@ def try_fill_with_local_files(json_data):
             }
             json_data['posts'][fname] = data
             json_data['overall'].append(fname)
-
-    return filled_local
 
 
 if __name__ == "__main__":
