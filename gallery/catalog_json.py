@@ -1,15 +1,20 @@
 import os.path
 import json
-import checklist
+from checklist import CheckList, CheckSubList
 import config as cfg
 
 
-class PondJSON:
+class CatalogJSON:
+    '''
+        Class for loading and storage catalog posts from JSON file and
+        performing user actions.
+    '''
     def __init__(self, uid):
         self.uid = uid
-        self.pond_fname = cfg.get_json_pond_file(self.uid)
-        self.pond = {}
+        self.catalog_fname = cfg.get_json_catalog_file(self.uid)
+        self.catalog = {}
         self.load()
+        self.sort()
         self.posts = {}
         self.fill_posts()
         self.checklists = {}
@@ -17,52 +22,60 @@ class PondJSON:
         self.page_params = {}
 
     def load(self):
-        if os.path.exists(self.pond_fname):
-            with open(self.pond_fname, 'r') as fp:
-                    self.pond = json.load(fp)
-                    self.sort()
+        '''
+            Loading and parse JSON from file
+        '''
+        if os.path.exists(self.catalog_fname):
+            with open(self.catalog_fname, 'r') as fp:
+                    self.catalog = json.load(fp)
 
     def sort(self):
         sort_key = 'mod_time'
-        self.pond['overall'] = sorted(
-            self.pond['overall'],
+        self.catalog['overall'] = sorted(
+            self.catalog['overall'],
             key=lambda v:
-            self.pond['posts'][v].get(sort_key) or
-            self.pond['posts'][v]['postId']
+            self.catalog['posts'][v].get(sort_key) or
+            self.catalog['posts'][v]['postId']
         )
 
     def dump(self):
-        self.pond['posts'].update(self.posts)
+        '''
+            Rewrite self JSON file
+        '''
+        self.catalog['posts'].update(self.posts)
         for l in self.checklists:
             lst = self.get_list(l)
             all_data = lst.get_data()
             commited_posts = lst.get_current_commited_posts()
-            self.pond[l] = list(set(all_data) - set(commited_posts))
+            self.catalog[l] = list(set(all_data) - set(commited_posts))
 
-        with open(self.pond_fname, 'w+') as fp:
-            json.dump(self.pond, fp)
+        with open(self.catalog_fname, 'w+') as fp:
+            json.dump(self.catalog, fp)
 
     def fill_posts(self):
-        for key in self.pond['posts']:
-            post = self.pond['posts'][key]
+        for postId in self.catalog['posts']:
+            post = self.catalog['posts'][postId]
             if (('checked' not in post) or
                     (cfg.STATE_COMMITED not in post['checked'].values())):
-                self.posts[key] = post
+                self.posts[postId] = post
 
     def create_checklists(self):
+        '''
+            Create and fill checklists specified in config
+        '''
         for list_cfg in cfg.check_lists:
             t = list_cfg['type']
             checklist_class = self.get_checklist_class(t)
-            checklist = checklist_class(self.pond, self.posts, list_cfg)
+            checklist = checklist_class(self.catalog, self.posts, list_cfg)
             self.checklists[t] = checklist
 
-    def get_checklist_class(self, t):
+    def get_checklist_class(self, t: str):
         if t == 'overall':
-            return checklist.CheckList
+            return CheckList
         else:
-            return checklist.CheckSubList
+            return CheckSubList
 
-    def get_checked_count(self, list_type=None):
+    def get_checked_count(self, list_type=None)-> int:
         lst = self.get_list(list_type)
         return lst.get_checked_count()
 
@@ -71,12 +84,13 @@ class PondJSON:
         post = self.posts[postId]
         lst.check_post(post)
 
-    def get_list(self, list_type=None):
-        if not list_type:
-            list_type = 'overall'
+    def get_list(self, list_type='overall')-> CheckList:
         return self.checklists[list_type]
 
-    def get_posts(self, offset, count, list_type):
+    def get_posts(self, offset: int, count: int, list_type: str)-> list:
+        '''
+            Get posts for page
+        '''
         lst = self.get_list(list_type)
         postids = lst.get_data()[offset:offset+count]
         posts = []

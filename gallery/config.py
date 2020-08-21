@@ -5,8 +5,8 @@ import re
 import json
 from glob import glob
 
-wip_path = 'static/ponds/'
-url_path = 'ponds/'
+wip_path = 'static/catalogs/'
+url_path = 'catalogs/'
 list_file_ext = '.url'
 json_file_ext = '.json'
 max_refs_count = 14
@@ -29,8 +29,8 @@ def is_uid_dir(uid, d):
     return template_uid_dir.match(d)
 
 
-def get_pond_dir(int_id):
-    uid = str(int_id)
+def get_catalog_dir(id_: int)-> str:
+    uid = str(id_)
     dir_path = os.path.join(wip_path, uid, '')
     if os.path.isdir(dir_path):
         return dir_path
@@ -44,9 +44,9 @@ def get_folders_list():
     return glob(os.path.join(wip_path, '*', ''))
 
 
-def get_json_pond_file(uid):
+def get_json_catalog_file(uid):
     listfile_name = str(uid)+json_file_ext
-    dirname = get_pond_dir(uid) or ''
+    dirname = get_catalog_dir(uid) or ''
     return dirname + listfile_name
 
 
@@ -76,7 +76,7 @@ def ask_confirm(prompt=None, resp=False):
             return False
 
 
-def commit_local_files(pond_uid, list_type, local_files):
+def commit_local_files(catalog_uid, list_type, local_files):
     today = datetime.date.today()
     hour = datetime.datetime.today().hour
     if hour % 2:
@@ -88,12 +88,12 @@ def commit_local_files(pond_uid, list_type, local_files):
             break
 
     commit_dir_name = f'{prefix}{today}H{hour}'
-    pond_dir = get_pond_dir(pond_uid)
-    commit_dir_path = os.path.join(pond_dir, commit_dir_name)
+    catalog_dir = get_catalog_dir(catalog_uid)
+    commit_dir_path = os.path.join(catalog_dir, commit_dir_name)
 
     if not os.path.exists(commit_dir_path):
         os.mkdir(commit_dir_path)
 
     for fname in local_files:
-        fpath = os.path.join(pond_dir, fname)
+        fpath = os.path.join(catalog_dir, fname)
         shutil.move(fpath, commit_dir_path)

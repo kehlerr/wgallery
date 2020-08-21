@@ -10,10 +10,10 @@
         <form method="POST" action="/">
             <main class="modal__content" id="modal-1-content">
                 Folder name: <b id="folder-name-label"></b>
-                <input type="hidden" id="pond_id-input" name="pond_id">
+                <input type="hidden" id="catalog_id-input" name="catalog_id">
                 <p>
                     <b>Choose type:</b>
-                    <select id="selectType" name="pond_type">
+                    <select id="selectType" name="catalog_type">
                         {% for t in types %}
                             <option value="{{t}}">{{t}}</option>
                         {% endfor %}
@@ -25,7 +25,7 @@
                 </p>
                 <p>
                     Category:
-                    <select id="selectCategory" name="pond_category">
+                    <select id="selectCategory" name="catalog_category">
                     </select>
                 </p>
                 <p>
@@ -95,7 +95,7 @@
         } else {
             folder_name_label.appendChild(txt);
         }
-        document.getElementById('pond_id-input').value=uid;
+        document.getElementById('catalog_id-input').value=uid;
         select_type.value = type
         Window.selected_category = category
         if ( typeof type != "undefined"){

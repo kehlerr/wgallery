@@ -22,7 +22,7 @@
 {% endmacro %}
 
 
-{% macro fill_table_ponds(data, label=None) %}
+{% macro fill_table_catalogs(data, label=None) %}
 {% if label %}
 <a class="fancy-button" style="background:#50ea71">
     <span style="color: #a20f5a;"><b>{{label}}</b></span>
@@ -32,8 +32,8 @@
 
     {% for p in data %}
         {% set uid=p['uid'] %}
-        {% set type_=p['pond_type'].name_id %}
-        {% set category=p['pond_category'].name_id %}
+        {% set type_=p['catalog_type'].name_id %}
+        {% set category=p['catalog_category'].name_id %}
         <div class="grid-item">
         {% if p.last_post %}
             <a href="{{ url_for('promote', uid=uid, lastpid=p['last_post']) }}">
@@ -43,7 +43,7 @@
             <div style="background-color:#b9ffdb;font-size:26;margin-bottom: 5px;margin-right: 7;border-radius: 7px;padding: 5px;padding-left: 10px;">
                 <a href="{{ url_for('promote', uid=uid) }}">{{ uid }} </a>
                 <span style="float: right">
-                    <a class="edit-pond-button" onclick="show_modal('{{uid}}','{{type_}}','{{category}}')">
+                    <a class="edit-catalog-button" onclick="show_modal('{{uid}}','{{type_}}','{{category}}')">
                         <img src="{{url_for('static', filename='img/icon_edit.svg')}}" width="28px" height="28px" viewbox="0 0 32 32">
                     </a>
                 </span>
@@ -67,7 +67,7 @@
 </div>
 {% endmacro %}
 
-{% macro create_new_ponds_panel(data) %}
+{% macro create_new_catalogs_panel(data) %}
 <div class="panel-row-new">
     <a class="fancy-button" style="background:#50ea71">
         <span style="color: #a20f5a;"><b>New catalogs</b></span>
@@ -100,8 +100,8 @@
 <body>
     {% include "edit_folder_modal.html" %}
 
-    {% if new_ponds %}
-        {{ create_new_ponds_panel(new_ponds) }}
+    {% if new_catalogs %}
+        {{ create_new_catalogs_panel(new_catalogs) }}
     {% endif %}
 
     {{ create_types_panel(types) }}
@@ -110,16 +110,16 @@
         {{ create_categories_panel(categories) }}
     {% endif %}
 
-    {% if last_seen_ponds %}
+    {% if last_seen_catalogs %}
         <div class="panel-row-new">
             <a class="fancy-button" style="background:linear-gradient(180deg, rgba(115,204,134,1) 0%, rgba(198,180,253,1) 80%);margin-bottom: 5px">
                 <span style="color: #a20f5a;"><b>Last seen</b></span>
             </a>
-            {{ fill_table_ponds(last_seen_ponds)}}
+            {{ fill_table_catalogs(last_seen_catalogs)}}
         </div>
     {% endif %}
 
-    {{ fill_table_ponds(ponds) }}
+    {{ fill_table_catalogs(catalogs) }}
 
     <script type="text/javascript">
         MicroModal.init({

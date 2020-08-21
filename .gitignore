@@ -1,4 +1,7 @@
 *.pyc
 *.swp
+*.db
 static/ponds/*
 .vscode/*
+env/*
+*.egg-info/

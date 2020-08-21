@@ -4,28 +4,28 @@ import json
 import config as cfg
 
 
-def update_pond(pond_uid):
-    pond_json_fname = cfg.get_json_pond_file(pond_uid)
-    if not os.path.exists(pond_json_fname):
-        print('pond json not exists!')
+def update_catalog(catalog_uid):
+    catalog_json_fname = cfg.get_json_catalog_file(catalog_uid)
+    if not os.path.exists(catalog_json_fname):
+        print('catalog json not exists!')
         exit(-1)
 
-    with open(pond_json_fname, 'r') as fp:
+    with open(catalog_json_fname, 'r') as fp:
         json_data = json.load(fp)
         json_data['info'] = {
-            'uid': pond_uid,
+            'uid': catalog_uid,
             'overall_count': len(json_data['overall']),
             'promo_count': len(json_data['promo']),
             'todel_count': len(json_data['todel']),
             'type': 'type' in json_data and json_data['type'] or 'default'
         }
 
-    with open(pond_json_fname, 'w+') as fp:
+    with open(catalog_json_fname, 'w+') as fp:
         json.dump(json_data, fp, separators=(',', ':'))
 
-    cfg.update_ponds_db(pond_uid, json_data['info'])
+    cfg.update_catalogs_db(catalog_uid, json_data['info'])
 
-    print(f'pond updated: {pond_uid}')
+    print(f'catalog updated: {catalog_uid}')
 
 
 if __name__ == "__main__":
@@ -39,4 +39,4 @@ if __name__ == "__main__":
         print(f'wrong directory: {dir_name}!!!')
         exit(-1)
 
-    update_pond(dir_name)
+    update_catalog(dir_name)

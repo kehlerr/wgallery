@@ -8,22 +8,22 @@ import config as cfg
 from gallery import models
 
 
-def update_pond(dir_name, new_type=None, new_category=None):
+def update_catalog(dir_name, new_type=None, new_category=None):
     dir_path = os.path.join(cfg.wip_path, dir_name)
     if not os.path.exists(dir_path) or not os.path.isdir(dir_path):
         print('wrong directory!!!')
         exit(-1)
 
-    pond_json_fname = cfg.get_json_pond_file(dir_name)
-    if os.path.exists(pond_json_fname):
+    catalog_json_fname = cfg.get_json_catalog_file(dir_name)
+    if os.path.exists(catalog_json_fname):
         if (not new_type and
-                not cfg.ask_confirm('Current pond exists. Regenerate?')):
+                not cfg.ask_confirm('Current catalog exists. Regenerate?')):
             exit(-1)
         else:
-            with open(pond_json_fname, 'r') as fp:
+            with open(catalog_json_fname, 'r') as fp:
                 prev_data = json.load(fp)
 
-            shutil.copy2(pond_json_fname, f'{pond_json_fname}~')
+            shutil.copy2(catalog_json_fname, f'{catalog_json_fname}~')
 
     start_cd = os.getcwd()
     os.chdir(dir_path)
@@ -39,16 +39,16 @@ def update_pond(dir_name, new_type=None, new_category=None):
             prev_type = prev_data['info']['type']
             prev_category = prev_data['info'].get('category')
 
-    t = new_type or input(f'Enter type of pond [{prev_type}]') or prev_type
+    t = new_type or input(f'Enter type of catalog [{prev_type}]') or prev_type
     if not t or len(t) <= 0:
-        print('none type of pond! try later...')
+        print('none type of catalog! try later...')
         exit(-1)
 
     category = None
     if new_category:
         category = new_category
     else:
-        category = input(f'Enter category of pond [{prev_category}]')
+        category = input(f'Enter category of catalog [{prev_category}]')
 
     if not category:
         category = prev_category
@@ -70,9 +70,9 @@ def update_pond(dir_name, new_type=None, new_category=None):
     with open(dir_name + '.json', 'w+') as fp:
         json.dump(json_data, fp)
 
-    print(f'pond generated: {dir_name}')
+    print(f'catalog generated: {dir_name}')
     os.chdir(start_cd)
-    models.update_pond_in_db(dir_name, json_data)
+    models.update_catalog_in_db(dir_name, json_data)
 
 
 def try_fill_with_local_files(json_data):
@@ -103,4 +103,4 @@ if __name__ == "__main__":
         print('need dir_name!')
         exit(-1)
 
-    update_pond(dir_name)
+    update_catalog(dir_name)

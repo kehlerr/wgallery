@@ -148,20 +148,20 @@
                 <script type="text/javascript" script-name="syncopate" src="http://use.edgefonts.net/syncopate.js"></script>
         </span>
     </div>
-    {% set pond_info = page.get_pond_info() %}
-    {{ create_info_panel(pond_info) }}
+    {% set catalog_info = page.get_catalog_info() %}
+    {{ create_info_panel(catalog_info) }}
 
-    <form id="main" action="{{url_for('promote', uid=pond_info['uid'])}}" method="POST">
-        <input type="hidden" name="offset" value="{{ pond_info['current_offset']}}">
-    {% if pond_info['src_list'] | length > 0 and pond_info['src_list'] != 'overall' %}
-        <input type="hidden" name="srcl" value="{{pond_info['src_list']}}">
+    <form id="main" action="{{url_for('promote', uid=catalog_info['uid'])}}" method="POST">
+        <input type="hidden" name="offset" value="{{ catalog_info['current_offset']}}">
+    {% if catalog_info['src_list'] | length > 0 and catalog_info['src_list'] != 'overall' %}
+        <input type="hidden" name="srcl" value="{{catalog_info['src_list']}}">
     {% endif %}
 
         <div class="grid-container">
-            {{ render_posts(pond_info.posts, pond_info['current_offset']) }}
+            {{ render_posts(catalog_info.posts, catalog_info['current_offset']) }}
         </div>
 
-        {% if not pond_info['category'] %}
+        {% if not catalog_info['category'] %}
             {{ create_category_panel() }}
         {% endif %}
 
@@ -177,7 +177,7 @@
         </div>
     </form>
 
-    {{ create_navigation_panel(pond_info) }}
+    {{ create_navigation_panel(catalog_info) }}
 
 </body>
 </html>

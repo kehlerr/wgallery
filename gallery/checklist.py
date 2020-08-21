@@ -2,23 +2,47 @@ import config as cfg
 
 
 class CheckList:
-    def __init__(self, pond, posts, list_cfg):
+    '''
+        Class for interaction with all posts of catalog and
+        getting data about them.
+    '''
+    def __init__(self, catalog: dict, posts: list, list_cfg: dict):
         self.type = list_cfg.get('type', 'unknown')
-        self.postids = pond.get(self.type, [])
+        self.postids = catalog.get(self.type, [])
         self.posts = posts
         self.commited_posts = []
         self.migrate()
 
     def migrate(self):
+        '''
+            Change entries if there was modifications in
+            structure, types of marks, etc.
+        '''
         pass
 
     def checkout(self):
+        '''
+            Check for new marked and unmarked posts
+        '''
         pass
 
-    def get_data(self):
+    def commit_posts(self):
+        '''
+            Perform promotion or deletion checked posts
+        '''
+        pass
+
+    def exclude_posts(self, posts: list):
+        '''
+            Don't include to show some posts;
+            used to hide commited posts.
+        '''
+        self.postids = list(set(self.postids) - set(posts))
+
+    def get_data(self)-> list:
         return self.postids
 
-    def get_posts(self, offset=0, count=cfg.posts_on_page):
+    def get_posts(self, offset=0, count=cfg.posts_on_page)-> list:
         posts = []
         for pid in self.postids[offset:offset+count]:
             posts.append(self.posts[pid])
@@ -28,10 +52,17 @@ class CheckList:
     def __len__(self):
         return len(self.postids)
 
-    def get_checked_count(self):
+    def get_checked_count(self)-> int:
         return len(self)
 
-    def check_post(self, post):
+    def get_current_commited_posts(self)-> list:
+        return self.commited_posts
+
+    def check_post(self, post: dict):
+        '''
+            Set post marked with the value, depending on list type or
+            unmark previously checked post
+        '''
         if 'checked' not in post:
             post['checked'] = {}
 
@@ -45,30 +76,25 @@ class CheckList:
             post['checked'][self.type] = cfg.STATE_CHECKED
             self.postids.append(post['postId'])
 
-    def is_post_checked(self, post):
+    def is_post_checked(self, post: dict):
         return self.get_post_checked_value(post) == cfg.STATE_CHECKED
 
-    def is_post_commited(self, post):
+    def is_post_commited(self, post: dict):
         return self.get_post_checked_value(post) == cfg.STATE_COMMITED
 
-    def get_post_checked_value(self, post):
+    def get_post_checked_value(self, post: dict):
         checked = post.get('checked')
         if checked:
             checked_in_list = post['checked'].get(self.type)
             return checked_in_list or 0
         return 0
 
-    def commit_posts(self):
-        pass
-
-    def get_current_commited_posts(self):
-        return self.commited_posts
-
-    def exclude_posts(self, posts):
-        self.postids = list(set(self.postids) - set(posts))
-
 
 class CheckSubList(CheckList):
+    '''
+        Class for interaction with group marked posts of catalog and
+        getting data about them.
+    '''
     def migrate(self):
         for pid in self.postids:
             if pid not in self.posts:
@@ -92,7 +118,7 @@ class CheckSubList(CheckList):
                     post.pop('checked')
         self.postids = new_checked_posts.copy()
 
-    def get_checked_count(self):
+    def get_checked_count(self)-> int:
         count = 0
         for pid in self.postids:
             post = self.posts.get(pid)

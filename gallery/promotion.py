@@ -5,10 +5,10 @@ import config as cfg
 
 
 class RequestHadler:
-    def __init__(self, request_form, pond):
+    def __init__(self, request_form, catalog):
         self.request_data = {}
         self.fill_request_data(request_form)
-        self.pond = pond
+        self.catalog = catalog
         self.page_params = {}
 
     def fill_request_data(self, request_form):
@@ -71,7 +71,7 @@ class PromoteRequestHandler(RequestHadler):
         self.set_page_params()
 
         if self.request_data.get('need_checkout'):
-            lst = self.pond.get_list(self.page_params['src_list'])
+            lst = self.catalog.get_list(self.page_params['src_list'])
             lst.checkout()
 
         if self.need_process_checked():
@@ -80,23 +80,23 @@ class PromoteRequestHandler(RequestHadler):
 
         self.check_and_process_category()
 
-        self.pond.dump()
+        self.catalog.dump()
 
     def process_checked(self, l_type):
         checked_data = self.request_data.get(l_type)
         for postId in checked_data:
-            self.pond.check_post(postId, l_type)
+            self.catalog.check_post(postId, l_type)
 
     def check_and_process_category(self):
         category = self.request_data.get('category')
         if category:
-            db_entry = models.get_pond_entry(self.pond.uid)
+            db_entry = models.get_catalog_entry(self.catalog.uid)
             db_entry.category = category
             db.session.commit()
 
     def set_page_params(self):
         src_list = self.request_data['src_list']
-        self.lst = self.pond.get_list(src_list)
+        self.lst = self.catalog.get_list(src_list)
         posts_count = len(self.lst)
         if len(self.request_data['last_postid']):
             self.last_postid = self.request_data['last_postid']
@@ -128,12 +128,12 @@ class CommitRequestHandler(RequestHadler):
 
     def handle(self):
         lst = self.request_data['src_list']
-        self.pond.commit(lst)
+        self.catalog.commit(lst)
 
 
 class PageData:
-    def __init__(self, pond, request_handler):
-        self.pond = pond
+    def __init__(self, catalog, request_handler):
+        self.catalog = catalog
 
         page_params = request_handler.get_page_params()
         self.offset = page_params['offset']
@@ -144,10 +144,10 @@ class PageData:
         self.calculate_refs()
         self.page_posts = self.get_posts()
         self.last_post = self.page_posts[-1]['postId']
-        self.db_entry = models.get_pond_entry(self.pond.uid)
+        self.db_entry = models.get_catalog_entry(self.catalog.uid)
 
     def get_posts(self):
-        lst = self.pond.get_list(self.src_list)
+        lst = self.catalog.get_list(self.src_list)
         return lst.get_posts(self.offset, cfg.posts_on_page)
 
     def calculate_refs(self):
@@ -162,9 +162,9 @@ class PageData:
     def get_db_categories(self):
         return models.get_categories_by_type(id_=self.db_entry.type)
 
-    def get_pond_info(self):
+    def get_catalog_info(self):
         return {
-            'uid': self.pond.uid,
+            'uid': self.catalog.uid,
             'src_list': self.src_list,
             'posts': self.page_posts,
             'refs_count': self.refs_count,
@@ -172,18 +172,18 @@ class PageData:
             'current_offset': self.offset,
             'last_ref_offset': self.last_ref_offset,
             'page_step': int(cfg.posts_on_page),
-            'overall_count': self.pond.get_checked_count('overall'),
-            'promo_count': self.pond.get_checked_count('promo'),
-            'todel_count': self.pond.get_checked_count('todel'),
+            'overall_count': self.catalog.get_checked_count('overall'),
+            'promo_count': self.catalog.get_checked_count('promo'),
+            'todel_count': self.catalog.get_checked_count('todel'),
             'type': self.db_entry.type,
             'category': self.db_entry.category
         }
 
-    def update_pond_in_db(self):
+    def update_catalog_in_db(self):
         self.define_last_post()
         self.db_entry.last_post = self.last_post
 
-        current_info = self.get_pond_info()
+        current_info = self.get_catalog_info()
         self.db_entry.overall_count = current_info['overall_count']
         self.db_entry.promo_count = current_info['promo_count']
         self.db_entry.todel_count = current_info['todel_count']
@@ -196,7 +196,7 @@ class PageData:
         if not last_post:
             last_post = self.last_post
         else:
-            lst = self.pond.get_list(self.src_list)
+            lst = self.catalog.get_list(self.src_list)
             posts = lst.get_data()
             if last_post in posts:
                 idx_stored = posts.index(last_post)
