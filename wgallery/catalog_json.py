@@ -6,8 +6,10 @@ import config as cfg
 
 class CatalogJSON:
     '''
-        Class for loading and storage catalog posts from JSON file and
-        performing user actions.
+        Data about all video files of each catalog
+        stored in JSON file inside catalog.
+        This class allows interact with posts (video files)
+        through JSON file.
     '''
     def __init__(self, uid):
         self.uid = uid

@@ -76,7 +76,7 @@
         {% for uid in data %}
         <div class="grid-item">
             <span>{{ uid }}</span>
-            <span style="float: right; vertical-align: middle">
+            <span onmouseover="" style="cursor: pointer;" style="float: right; vertical-align: middle">
                 <a class="fancy-button" style="background:#50ea71" onclick="show_modal('{{uid}}')">
                     <span style="color: #a20f5a;">+</span>
                 </a>
@@ -104,7 +104,9 @@
         {{ create_new_catalogs_panel(new_catalogs) }}
     {% endif %}
 
-    {{ create_types_panel(types) }}
+    {% if types %}
+        {{ create_types_panel(types) }}
+    {% endif %}
 
     {% if categories %}
         {{ create_categories_panel(categories) }}
@@ -119,7 +121,9 @@
         </div>
     {% endif %}
 
-    {{ fill_table_catalogs(catalogs) }}
+    {% if catalogs %}
+        {{ fill_table_catalogs(catalogs) }}
+    {% endif %}
 
     <script type="text/javascript">
         MicroModal.init({

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from gallery import db, models
+from wgallery import db, models
 import config as cfg
 
 

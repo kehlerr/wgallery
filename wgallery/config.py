@@ -5,8 +5,8 @@ import re
 import json
 from glob import glob
 
-wip_path = 'static/catalogs/'
-url_path = 'catalogs/'
+videoUrl_path = 'catalogs_root/'
+catalogs_root_path = 'static/' + videoUrl_path
 list_file_ext = '.url'
 json_file_ext = '.json'
 max_refs_count = 14
@@ -31,7 +31,7 @@ def is_uid_dir(uid, d):
 
 def get_catalog_dir(id_: int)-> str:
     uid = str(id_)
-    dir_path = os.path.join(wip_path, uid, '')
+    dir_path = os.path.join(catalogs_root_path, uid, '')
     if os.path.isdir(dir_path):
         return dir_path
     else:
@@ -41,13 +41,22 @@ def get_catalog_dir(id_: int)-> str:
 
 
 def get_folders_list():
-    return glob(os.path.join(wip_path, '*', ''))
+    return glob(os.path.join(catalogs_root_path, '*', ''))
 
 
 def get_json_catalog_file(uid):
     listfile_name = str(uid)+json_file_ext
     dirname = get_catalog_dir(uid) or ''
     return dirname + listfile_name
+
+
+def has_any_video_in_catalog(dir_name: str)-> bool:
+    dir_path = os.path.join(catalogs_root_path, dir_name, '')
+    files_list = os.listdir(dir_path)
+    for fname in files_list:
+        if is_video(fname):
+            return True
+    return False
 
 
 def is_video(fname):

@@ -1,4 +1,4 @@
-#!/usr/bin/python3.8
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -11,7 +11,7 @@ if not dir_name:
     print('need dir_name!')
     exit(-1)
 
-dir_path = config.wip_path + dir_name
+dir_path = config.catalogs_root_path + dir_name
 if not os.path.exists(dir_path) or not os.path.isdir(dir_path):
     print('wrong directory!!!')
     exit(-1)

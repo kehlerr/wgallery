@@ -5,3 +5,5 @@ static/ponds/*
 .vscode/*
 env/*
 *.egg-info/
+build/*
+dist/*

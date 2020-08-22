@@ -2,7 +2,7 @@ import json
 from flask import render_template, request, url_for, redirect, views
 
 import config as cfg
-from gallery import models
+from wgallery import models
 import common_forms
 from generate_catalog_json import update_catalog
 
@@ -84,7 +84,12 @@ class IndexView(views.MethodView):
     def scan_for_new_catalogs(self):
         folders_in_db = {x.name_id for x in self.catalogs_list}
         current_folders = {x.split('/')[-2] for x in cfg.get_folders_list()}
-        self.new_catalogs = list(current_folders.difference(folders_in_db))
+        new_catalogs = list(current_folders.difference(folders_in_db))
+        if new_catalogs:
+            self.new_catalogs = []
+            for catalog in new_catalogs:
+                if cfg.has_any_video_in_catalog(catalog):
+                    self.new_catalogs.append(catalog)
         self.deleted_catalogs = list(folders_in_db.difference(current_folders))
 
     def fill_last_seen_catalogs(self):

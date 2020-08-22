@@ -1,6 +1,6 @@
-#!/usr/bin/env python3.8
+#!/usr/bin/env python3
 
-from gallery import app
+from wgallery import app
 
 
 if __name__ == '__main__':

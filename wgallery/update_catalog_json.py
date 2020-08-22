@@ -34,7 +34,7 @@ if __name__ == "__main__":
         print('need dir_name!')
         exit(-1)
 
-    dir_path = os.path.join(cfg.wip_path, dir_name)
+    dir_path = os.path.join(cfg.catalogs_root_path, dir_name)
     if not os.path.exists(dir_path) or not os.path.isdir(dir_path):
         print(f'wrong directory: {dir_name}!!!')
         exit(-1)

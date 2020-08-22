@@ -1,4 +1,4 @@
-from gallery import db
+from wgallery import db
 
 
 class Catalog(db.Model):
@@ -26,26 +26,26 @@ def get_catalog_entry(catalog_id: str) -> Catalog:
 
 
 def filter_and_get_catalogs(type_=None, category=None):
-    if type_:
-        type_entry = CatalogType.query.filter_by(name_id=type_).first()
-        if type_entry:
-            type_id = type_entry.id
-            category_id = None
-            if category:
-                category_entry = CatalogCategory.query.filter_by(
-                    name_id=category).first()
-                if category_entry:
-                    category_id = category_entry.id
-        return Catalog.query.filter_by(type=type_id, category=category_id).all()
-    else:
+    if not type_:
         return Catalog.query.all()
+
+    type_entry = CatalogType.query.filter_by(name_id=type_).first()
+    if type_entry:
+        type_id = type_entry.id
+        category_id = None
+        if category:
+            category_entry = CatalogCategory.query.filter_by(
+                name_id=category).first()
+            if category_entry:
+                category_id = category_entry.id
+    return Catalog.query.filter_by(type=type_id, category=category_id).all()
 
 
 def update_catalog_in_db(catalog_id, data):
     overall_count = len(data['overall'])
     type_ = data['type']
-    type_id = CatalogType.query.filter_by(name_id=type_).first().id
     check_and_update_types(type_)
+    type_id = CatalogType.query.filter_by(name_id=type_).first().id
     category_id = None
     category = data.get('category')
     if category:
@@ -134,5 +134,6 @@ def get_categories_by_type(name_id=None, id_=None):
         type_entry = CatalogType.query.filter_by(name_id=name_id).first()
     elif id_:
         type_entry = CatalogType.query.filter_by(id=id_).first()
-    result = CatalogCategory.query.filter_by(catalog_type_id=type_entry.id).all()
+    type_id = type_entry.id
+    result = CatalogCategory.query.filter_by(catalog_type_id=type_id).all()
     return [x.name_id for x in result]

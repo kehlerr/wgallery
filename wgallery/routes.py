@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from flask import render_template, request, url_for, redirect
 
-from gallery import app
+from wgallery import app
 import config as cfg
 from promotion import PageData, PromoteRequestHandler, CommitRequestHandler
 from catalog_json import CatalogJSON

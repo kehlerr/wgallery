@@ -5,18 +5,19 @@ import shutil
 import json
 
 import config as cfg
-from gallery import models
+from wgallery import models
 
 
 def update_catalog(dir_name, new_type=None, new_category=None):
     '''
         Update info about catalog in database
     '''
-    dir_path = os.path.join(cfg.wip_path, dir_name)
+    dir_path = os.path.join(cfg.catalogs_root_path, dir_name)
     if not os.path.exists(dir_path) or not os.path.isdir(dir_path):
         print('wrong directory!!!')
         exit(-1)
 
+    prev_data = {}
     catalog_json_fname = cfg.get_json_catalog_file(dir_name)
     if os.path.exists(catalog_json_fname):
         if (not new_type and
@@ -33,6 +34,8 @@ def update_catalog(dir_name, new_type=None, new_category=None):
 
     prev_type = None
     prev_category = None
+    prev_promo = []
+    prev_todel = []
 
     if prev_data:
         print('Current checked data will be saved')
@@ -58,10 +61,10 @@ def update_catalog(dir_name, new_type=None, new_category=None):
         category = prev_category
 
     json_data = {
-        'posts': prev_data['posts'],
-        'overall': prev_data['overall'],
-        'promo': prev_promo or [],
-        'todel': prev_todel or [],
+        'posts': prev_data.get('posts') or {},
+        'overall': prev_data.get('overall') or [],
+        'promo': prev_promo,
+        'todel': prev_todel,
         'type': t,
         'fpath': dir_path
     }
@@ -69,7 +72,7 @@ def update_catalog(dir_name, new_type=None, new_category=None):
     if category:
         json_data['category'] = category
 
-    fill_local_files(json_data)
+    fill_local_files(dir_name, json_data)
 
     with open(dir_name + '.json', 'w+') as fp:
         json.dump(json_data, fp)
@@ -79,7 +82,7 @@ def update_catalog(dir_name, new_type=None, new_category=None):
     models.update_catalog_in_db(dir_name, json_data)
 
 
-def fill_local_files(json_data):
+def fill_local_files(dir_name, json_data):
     '''
         Fill json data with local files
     '''
@@ -88,7 +91,7 @@ def fill_local_files(json_data):
     for fname in files_list:
         if cfg.is_video(fname):
             data = {
-                'videoUrl': os.path.join(cfg.url_path, dir_name, fname),
+                'videoUrl': os.path.join(cfg.videoUrl_path, dir_name, fname),
                 'local_filename': fname,
                 'postId': fname,
                 'mod_time': os.path.getmtime(fname)
