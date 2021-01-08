@@ -18,8 +18,8 @@
                 </div>
                 <div class="content">
                     <video width="220" height="360" controls="">
-                        {% if post['local_filename'] %}
-                            <source src="{{ url_for('static', filename=post['videoUrl']) }}" type="video/mp4">
+                        {% if post['localUrl'] %}
+                            <source src="{{ url_for('static', filename=post['localUrl']) }}" type="video/mp4">
                         {% else %}
                             <source src="{{ post['videoUrl'] }}" type="video/mp4">
                         {% endif %}

@@ -11,7 +11,7 @@ list_file_ext = '.url'
 json_file_ext = '.json'
 max_refs_count = 14
 posts_on_page = 15
-video_exts = ['.mp4', '.webm']
+video_exts = ['.mp4', '.webm', '.flv', '.avi', '.3gp']
 
 check_lists = [
     {'type': 'overall'},
